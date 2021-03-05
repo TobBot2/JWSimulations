@@ -1,0 +1,14 @@
+.topnav {
+    overflow: hidden;
+    background-color: #5298b9;
+}
+
+body {
+    background-color: #fafbfa;
+}
+canvas {
+    background-color: #5298b9;
+}
+.sim_buttons_container {
+    background-color: #fafbfa;
+}

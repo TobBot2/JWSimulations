@@ -1,16 +1,31 @@
-let canvas = document.getElementById("gameCanvas");
-let g = canvas.getContext("2d");
+const canvas = document.getElementById("gameCanvas");
+const massInput = document.getElementById("massSlider");
+const sizeInput = document.getElementById("sizeSlider");
 
-const gConst = 1;
-const velDampener = .1;
+const ctx = canvas.getContext("2d");
+
+const gConst = .1; // gravitational constant
+const velDampener = .01; // dampens velocity so pixel size and in-code vel are not 1:1
 
 const allPlanets = [];
 let sPlanetIndex = -1; // selected planet index
+let fPlanetIndex = -1; // focused planet index;
 
 let playing = false;
+let pathStats = {
+    size: 0,
+    maxSize: 60000,
+    calculateSpeed: 60,
+};
 
+// ====== toggle gizmos ========= 
+let showVelocities = true;
+let showForces = true;
+let showPaths = true;
+// ============ button functions ===============
 function togglePlaySimulation(){
     playing = !playing;
+    sPlanetIndex = -1;
 }
 function resetSimulation(){
     playing = false;
@@ -24,6 +39,24 @@ function deleteCurrentPlanet(){
         sPlanetIndex = -1;
     }
 }
+// ============ path stuff ==================
+function calculateNextVelInPaths(){
+    pathStats.size += pathStats.calculateSpeed;
+    for (let i = 0; i < pathStats.calculateSpeed; i++){
+        for (const p of allPlanets){
+            p.calculateNextVelInPath();
+        }
+    }
+}
+function clearVelsInPaths(){
+    pathStats.size = 0;
+    for (const p of allPlanets){
+        p.clearVelsInPath();
+    }
+}
+/*  =========================
+          main functions
+    ========================= */
 function update(){
     if (playing){
         for (const p of allPlanets){
@@ -32,21 +65,33 @@ function update(){
         for (const p of allPlanets){
             p.lateUpdate();
         }
+    } else {
+        if (showPaths && pathStats.size < pathStats.maxSize)
+            calculateNextVelInPaths();
     }
 }
 function render(){
-    // render slightly larger red circle behind selected circle to show it is selected
-    g.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (const p of allPlanets){ // draw planets
+        p.render(ctx);
+    }
+    
+    for (const p of allPlanets){ // draw gizmos
+        if (showVelocities)
+            p.renderVel(ctx);
+        if (showPaths)
+            p.renderPath(ctx);
+    }
+    // ============= highlights selected planet ============== \\
     if (sPlanetIndex != -1){
         const p = allPlanets[sPlanetIndex];
-        g.beginPath();
-        g.fillStyle = "red";
-        g.arc(p.x, p.y, p.radius + 2, 0, Math.PI*2, false);
-        g.fill();
-        g.closePath();
-    }
-    for (let p of allPlanets){
-        p.render(g);
+        ctx.beginPath();
+        ctx.strokeStyle = "red";
+        ctx.lineWidth = 3;
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2, false);
+        ctx.stroke();
+        ctx.closePath();
     }
 }
 
@@ -59,34 +104,41 @@ function gameLoop(){
 gameLoop();
 canvas.onclick = e => {
     if (playing) return;
+    
+    // https://stackoverflow.com/questions/3234256/find-mouse-position-relative-to-element
+    const mouseX = e.pageX - e.currentTarget.offsetLeft;
+    const mouseY = e.pageY - e.currentTarget.offsetTop;
+
+    // check if click on existing
+    for (let i = 0; i < allPlanets.length; i++){
+        const p = allPlanets[i];
+        if ((p.x - mouseX)*(p.x - mouseX) + (p.y - mouseY)*(p.y - mouseY) < p.radius * p.radius){
+            sPlanetIndex = i;
+            return;
+        }
+    }
+    // if not clicked anything, create new planet
+    allPlanets.push(new Planet(mouseX, mouseY, massInput.value, sizeInput.value, "green", gConst, velDampener, allPlanets));
+    sPlanetIndex = allPlanets.length - 1;
+    clearVelsInPaths();
+}
+canvas.oncontextmenu = e => { // ON RIGHT CLICK
+    if (playing) return false;
 
     // https://stackoverflow.com/questions/3234256/find-mouse-position-relative-to-element
     const mouseX = e.pageX - e.currentTarget.offsetLeft;
     const mouseY = e.pageY - e.currentTarget.offsetTop;
 
-    onMouseClick: if (e.button == 0){
-        // check if click on existing
-        for (let i = 0; i < allPlanets.length; i++){
-            const p = allPlanets[i];
-            if ((p.x - mouseX)*(p.x - mouseX) + (p.y - mouseY)*(p.y - mouseY) < p.radius * p.radius){
-                sPlanetIndex = i;
-                break onMouseClick;
-            }
-        }
-        // if not clicked anything, create new planet
-        allPlanets.push(new Planet(mouseX, mouseY, 1, 50, "green", gConst, allPlanets));
-        sPlanetIndex = allPlanets.length - 1;
+    if (sPlanetIndex != -1){
+        // set velocity of planet
+        const p = allPlanets[sPlanetIndex];
+        p.initVelX = (mouseX - p.x) * velDampener;
+        p.initVelY = (mouseY - p.y) * velDampener;
+        p.applyInitValues();
     }
-
-    if (e.button == 2){
-        if (sPlanetIndex != -1){
-            // set velocity of planet
-            const p = allPlanets[sPlanetIndex];
-            p.initVelX = (mouseX - p.x) * velDampener;
-            p.initVelY = (mouseY - p.y) * velDampener;
-        }
-    }
+    clearVelsInPaths();
+    return false; // return false so the context menu doesn't show
 }
 canvas.ondrag = e => {
-    // if selected planet != null, move it
+    
 }

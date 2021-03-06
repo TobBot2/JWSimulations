@@ -1,14 +1,88 @@
+/*
+    Color Pallette: #fafafa (white)
+                    #5298b9 (blue)
+                    #3a3a3a (black)
+*/
+
 .topnav {
-    overflow: hidden;
-    background-color: #5298b9;
+    background-color: #3a3a3a;
+    position: fixed;
+    width: 100%;
+    left: 0;
+    top: 0;
+    padding: 15px;
+}
+.topnav a {
+    color: #fafafa;
+    font-size: 150%;
+    text-decoration: none;
+    padding: 0 15px;
+}
+.topnav a:hover, .topnav a:focus {
+    color: #5298b9;
+    text-decoration: underline;
+    outline: none;
+}
+body {
+    background-color: #fafafa;
+}
+/*
+    ===============================
+    Simulation interaction elements
+    ===============================
+*/
+.sim_buttons_container {
+    padding: 5px;
+    background-color: #fafafa;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
 }
 
-body {
-    background-color: #fafbfa;
-}
-canvas {
+    /* ========= buttons ========== */
+.sim_buttons_container button {
     background-color: #5298b9;
+    border-color: #5298b9;
+    color: #fafafa;
+    padding: 5px 8px;
+    margin: 3px;
+    border-radius: 4px;
 }
-.sim_buttons_container {
-    background-color: #fafbfa;
+.sim_buttons_container button:hover, 
+.sim_buttons_container button:focus {
+    outline: none;
+    color: #3a3a3a;
+}
+
+    /* ========= sliders ========== */
+.sim_buttons_container .slider {
+    appearance: none;
+    margin: 3px;
+    padding: 0px 2px;
+    border-radius: 4px;
+    width: 125px;
+    height: 4px;
+}
+.sim_buttons_container .slider::-webkit-slider-runnable-track {
+    appearance: none;
+    border-radius: 5px;
+}
+.sim_buttons_container .slider::-webkit-slider-thumb {
+    appearance: none;
+    background-color: #5298b9;
+    border-style: solid;
+    border-color: #fafafa;
+    border-width: 2px;
+    border-radius: 10px;
+    width: 20px;
+    height: 20px;
+}
+.sim_buttons_container .slider:hover,
+.sim_buttons_container .slider:focus {
+    outline: none;
+}
+.sim_buttons_container .slider:hover::-webkit-slider-thumb,
+.sim_buttons_container .slider:focus::-webkit-slider-thumb {
+    outline: none;
+    border-color: #3a3a3a;
 }

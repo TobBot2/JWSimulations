@@ -3,21 +3,25 @@
 <html>
     <head>
         <title>Gravity and Keppler's Law</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="game.js" async></script>
         <script src="planet.js" async></script>
+        <script src="../csshelper.js" async></script>
         <link rel="stylesheet" href="../main.css"></link>
     </head>
     <body>
         <div class="topnav">
-            <a href="../index.html">Home</a>
+            <a href="../home/index.html">Home</a>
         </div>
+
+        <canvas id="gameCanvas" style="background-color: #eaeaea" width="800" height="650"></canvas>
         <div class="sim_buttons_container">
+            <button id="resetSimulation" onclick="resetSimulation()">Rewind</button>
             <button id="playAndPause" onclick="togglePlaySimulation()">Play/Pause</button>
-            <button id="resetSimulation" onclick="resetSimulation()">Reset</button>
             <button id="deletePlanet" onclick="deleteCurrentPlanet()">Delete Planet</button>
-            <!-- add slider for mass and size -->
+            <input type="range" min="1" max="100" value="50" class="slider" id="massSlider">
+            <input type="range" min="1" max="100" value="50" class="slider" id="sizeSlider">
         </div>
-        <canvas id="gameCanvas" width="800" height="500"></canvas>
 
     </body>
 </html>

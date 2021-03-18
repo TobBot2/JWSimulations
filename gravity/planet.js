@@ -42,10 +42,15 @@ class Planet {
             if (p == this) continue;
 
             // get position of p in correct time
-            let pTimedPos = { x: p.x, y: p.y } // start at current position
-            for (let i = 0; i < timeIndex; i++){
-                pTimedPos.x += p.futureVels[i].x; // add velocities cumulatively to move forward in time
-                pTimedPos.y += p.futureVels[i].y; // if timeIndex == 0, then this doesn't run and pTimedPos is just normal pos
+            let pTimedPos = { x: p.x, y: p.y } // start calculations from initial position.
+
+            if (timeIndex != 0){
+                pTimedPos.x = p.initX;
+                pTimedPos.y = p.initY;
+                for (let i = 0; i < timeIndex; i++){
+                    pTimedPos.x += p.futureVels[i].x; // add velocities cumulatively to move forward in time
+                    pTimedPos.y += p.futureVels[i].y; // if timeIndex == 0, then this doesn't run and pTimedPos is just normal pos
+                }
             }
 
             // f = f->G(m1)(m2)/(r*r)
@@ -91,6 +96,41 @@ class Planet {
         rendering planet + gizmos
         =========================
     */
+    renderArrow(ctx, startX, startY, targX, targY){
+        const ang = Math.atan2(targY-startY, targX-startX);
+        const headSize = Math.sqrt( (startX-targX)*(startX-targX)+(startY-targY)*(startY-targY) ) / 6;
+
+        let headStart = {
+            x: targX - Math.cos(ang) * (headSize * .93), // not sure why I need to multiply the headSize by .93,
+            y: targY - Math.sin(ang) * (headSize * .93), //   its too short otherwise
+        }
+
+        ctx.globalAlpha = .5;
+        // main line
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(headStart.x, headStart.y); // don't go all the way to the end so the opacity doesn't overlap
+        ctx.closePath();
+        ctx.stroke();
+        
+        // arrow head
+        ctx.beginPath();
+        let drawHelper = { // point of reference to draw the ends of the two lines that make up the head
+            x: Math.cos(ang + Math.PI/8 + Math.PI) * headSize,
+            y: Math.sin(ang + Math.PI/8 + Math.PI) * headSize,
+        }
+        ctx.moveTo(targX + drawHelper.x, targY + drawHelper.y);
+        ctx.lineTo(targX, targY);
+        drawHelper = {
+            x: Math.cos(ang - Math.PI/8 + Math.PI) * headSize,
+            y: Math.sin(ang - Math.PI/8 + Math.PI) * headSize,
+        }
+        ctx.lineTo(targX + drawHelper.x, targY + drawHelper.y);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.globalAlpha = 1;
+    }
     render(ctx){
         ctx.beginPath();
         ctx.fillStyle = this.color;
@@ -101,59 +141,55 @@ class Planet {
         ctx.stroke();
         ctx.closePath();
     }
+    renderForces(ctx){
+        ctx.strokeStyle = "blue";
+        ctx.fillStyle = "blue";
+        ctx.lineWidth = 5;
+        const acc = this.calculateAcc(this.x, this.y);
+        this.renderArrow(ctx, this.x, this.y, this.x + acc.x/velDampener*30, this.y + acc.y/velDampener*30); // *30 to exaggerate it a bit
+    }
     renderVel(ctx){
-        if (Math.abs(this.velX/velDampener) + Math.abs(this.velY/velDampener) < 5) return; // don't draw the line if it is too short
-
-        const arrowTip = { x: this.velX/velDampener + this.x, y: this.velY/velDampener + this.y, }
-        const arrowHeadMag = (this.velX + this.velY)/velDampener/4 < 10 ? 10 : (this.velX + this.velY)/velDampener/4; // constrain to a min of 10
-        const arrowAng = Math.atan2(this.velY, this.velX);
-
-        ctx.beginPath();
         ctx.strokeStyle = "red";
         ctx.fillStyle = "red";
         ctx.lineWidth = 5;
-        
-        // main line
-        ctx.moveTo(this.x, this.y);
-        ctx.lineTo(arrowTip.x, arrowTip.y);
-        ctx.stroke();
-        ctx.fill();
-        ctx.closePath();
-        
-        ctx.beginPath();
-        // arrow head
-        let arrowHead = {
-            x: Math.cos(arrowAng + Math.PI/4 + Math.PI) * arrowHeadMag,
-            y: Math.sin(arrowAng + Math.PI/4 + Math.PI) * arrowHeadMag,
-        }
-        ctx.moveTo(arrowTip.x + arrowHead.x, arrowTip.y + arrowHead.y);
-        ctx.lineTo(arrowTip.x, arrowTip.y);
-        arrowHead = {
-            x: Math.cos(arrowAng - Math.PI/4 + Math.PI) * arrowHeadMag,
-            y: Math.sin(arrowAng - Math.PI/4 + Math.PI) * arrowHeadMag,
-        }
-        ctx.lineTo(arrowTip.x + arrowHead.x, arrowTip.y + arrowHead.y);
-        
-        ctx.fill();
-        ctx.stroke();
-        ctx.closePath();
+        this.renderArrow(ctx, this.x, this.y, this.x+this.velX/velDampener, this.y+this.velY/velDampener);
     }
-    renderPath(ctx){
+    renderPath(ctx, focusedPlanet = null){
         ctx.beginPath();
         ctx.strokeStyle = this.color;
-        ctx.lineWidth = 5;
+        ctx.lineWidth = 1;
+        ctx.globalAlpha = .5;
 
-        ctx.moveTo(this.initX + this.futureVels[0].x, this.initY + this.futureVels[0].y);
+        let focusedStep = { x: 0, y: 0};
+        if (focusedPlanet != null){
+            focusedStep.x -= focusedPlanet.futureVels[0].x - focusedPlanet.x + canvas.width/2 + focusedPlanet.initX - canvas.width/2;
+            focusedStep.y -= focusedPlanet.futureVels[0].y - focusedPlanet.y + canvas.height/2 + focusedPlanet.initY - canvas.height/2;
+        }
+
+        ctx.moveTo(this.initX + this.futureVels[0].x + focusedStep.x, this.initY + this.futureVels[0].y + focusedStep.y);
         let prevPos = { x: this.initX + this.futureVels[0].x, y: this.initY + this.futureVels[0].y };
 
         for (let i = 1; i < this.futureVels.length-1; i++){
             const step = this.futureVels[i];
-            ctx.lineTo(prevPos.x + step.x, prevPos.y + step.y);
+
+            if (focusedPlanet != null && focusedPlanet.futureVels.length > i){
+                focusedStep.x -= focusedPlanet.futureVels[i].x;
+                focusedStep.y -= focusedPlanet.futureVels[i].y;
+            }
+
+            // FOR DOTTED LINE:
+            /*if (i % 60 < 30) // i % x < x/2 (so it is half on and half off) - proportional to speed
+                ctx.lineTo(prevPos.x + step.x + focusedStep.x, prevPos.y + step.y + focusedStep.y);
+            else 
+                ctx.moveTo(prevPos.x + step.x + focusedStep.x, prevPos.y + step.y + focusedStep.y);*/
+            // FOR SOLID LINE:
+            ctx.lineTo(prevPos.x + step.x + focusedStep.x, prevPos.y + step.y + focusedStep.y);
+            
             prevPos.x += step.x;
             prevPos.y += step.y;
         }
-
         ctx.stroke();
+        ctx.globalAlpha = 1;
         ctx.closePath();
     }
 }

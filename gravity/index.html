@@ -1,27 +1,83 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
     <head>
-        <title>Gravity and Keppler's Law</title>
+        <title>Gravity</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="game.js" async></script>
         <script src="planet.js" async></script>
-        <script src="../csshelper.js" async></script>
-        <link rel="stylesheet" href="../main.css"></link>
+        <script src="../css/csshelper.js" async></script>
+        <link rel="stylesheet" href="../css/main.css"></link>
     </head>
     <body>
         <div class="topnav">
             <a href="../home/index.html">Home</a>
         </div>
 
-        <canvas id="gameCanvas" style="background-color: #eaeaea" width="800" height="650"></canvas>
-        <div class="sim_buttons_container">
-            <button id="resetSimulation" onclick="resetSimulation()">Rewind</button>
-            <button id="playAndPause" onclick="togglePlaySimulation()">Play/Pause</button>
-            <button id="deletePlanet" onclick="deleteCurrentPlanet()">Delete Planet</button>
-            <input type="range" min="1" max="100" value="50" class="slider" id="massSlider">
-            <input type="range" min="1" max="100" value="50" class="slider" id="sizeSlider">
+        <div class="simulation_space">
+            <canvas id="gameCanvas" style="background-color: black" width="1000" height="675">
+                Your browser does not support the html canvas element. Try updating or switching browsers</canvas>
+            <noscript>Javascript is disabled by your browser, so the simulation will not work</noscript>
+            <div class="sim_buttons_container">
+                <button id="resetSimulation" onclick="resetSimulation()">Rewind</button>
+                <button id="playAndPause" onclick="togglePlaySimulation()">Play/Pause</button>
+                <button id="speedMultiplier" onclick="speedUpSimulation('speedMultiplier')">1x Speed</button>
+                <button id="focusePlanet" onclick="focusCurrentPlanet()">Center Planet</button>
+                <button id="deletePlanet" onclick="deleteCurrentPlanet()">Delete Planet</button>
+                <div class="input_container">
+                    <label for="planetColor">Color: </label>
+                    <input type="color" class="color" value="#5298b9" id="planetColor">
+                </div>
+                <!--#region sliders-->
+                <div class="input_container">
+                    <label for="massSlider">Mass<span>: 50</span></label>
+                    <input type="range" min="1" max="100" value="50" class="slider" id="massSlider">
+                </div>
+                <div class="input_container">
+                    <label for="sizeSlider">Size<span>: 50</span></label>
+                    <input type="range" min="1" max="100" value="50" class="slider" id="sizeSlider">
+                </div>
+                <!--#endregion sliders-->
+                <!--#region toggles-->
+                <div class="input_container">
+                    <label for="showPaths">Paths: </label>
+                    <input type="checkbox" class="toggle" id="showPaths">
+                </div>
+                <div class="input_container">
+                    <label for="showVels">Velocities: </label>
+                    <input type="checkbox" class="toggle" checked="true" id="showVels">
+                </div>
+                <div class="input_container">
+                    <label for="showForces">Forces: </label>
+                    <input type="checkbox" class="toggle" id="showForces">
+                </div>
+                <!--#endregion toggles-->
+            </div>
         </div>
 
+        <div class="simulation_info">
+            <article>
+                <h1>How To Use</h1>
+                <p>
+                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. At exercitationem repudiandae veritatis repellendus? Necessitatibus cumque enim doloremque alias dolorem natus maxime veritatis sint. Minus ad, similique quas a alias eius ipsam laboriosam enim debitis fugit quam omnis reprehenderit aspernatur natus nostrum asperiores numquam culpa odio illo sequi dolorum quae aperiam reiciendis perferendis. Velit, aut. Quibusdam ab molestiae tempore, ipsam blanditiis voluptates ipsa nobis explicabo sequi vitae modi, nostrum dolor optio. Aperiam ad velit facere odit iusto repellendus est vero autem, voluptas omnis soluta, dolorem adipisci, corrupti provident esse consequatur commodi sed laboriosam qui quis beatae et. Iste, excepturi! Enim, culpa.
+                </p>
+            </article>
+
+            <article>
+                <h1>Gravity</h1>
+                <p>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim consequuntur porro corrupti iste libero debitis vero fugiat optio voluptatibus voluptates suscipit quo quod quaerat provident magni sit unde magnam quam nesciunt, autem, tempore ut eos non. Velit et beatae minus repellat aut dolor deserunt laboriosam quas quam, vero iusto assumenda totam voluptas maiores enim ipsum dignissimos accusantium quo cum, maxime, voluptatum corporis. Veniam necessitatibus ad nobis fugiat adipisci repellat vel doloribus ratione error. Eius ut corrupti sunt necessitatibus nostrum blanditiis, architecto totam, voluptas, aliquid praesentium ex soluta repellendus sint officiis vero sit eos eaque pariatur! Ratione necessitatibus quis modi debitis?
+
+                </p>
+                
+            </article>
+
+            <article>
+                <h1>Coding Implementation</h1>
+                <p>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam nihil, cupiditate facere blanditiis fuga tempore quaerat quibusdam magnam deserunt, autem, vel eaque. Harum earum expedita et iusto obcaecati quas minus porro. Quia neque, illo veniam incidunt, saepe hic earum, fuga laudantium rerum inventore eligendi praesentium temporibus numquam at optio autem cumque. Magni error hic explicabo cum culpa quisquam, labore et enim odio quia tenetur consectetur inventore at voluptatibus molestiae eaque perspiciatis expedita facilis unde similique.
+                </p>
+            </article>
+        </div>
     </body>
 </html>

@@ -4,8 +4,9 @@
     <head>
         <title>Gravity</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="game.js" async></script>
+        <script src="presets.js" async></script>
         <script src="planet.js" async></script>
+        <script src="game.js" async></script>
         <script src="../css/csshelper.js" async></script>
         <link rel="stylesheet" href="../css/main.css"></link>
     </head>
@@ -19,9 +20,11 @@
                 Your browser does not support the html canvas element. Try updating or switching browsers</canvas>
             <noscript>Javascript is disabled by your browser, so the simulation will not work</noscript>
             <div class="sim_buttons_container">
+                <button onclick="document.getElementById('gameCanvas').scrollIntoView(true)">Cinema</button>
                 <button id="resetSimulation" onclick="resetSimulation()">Rewind</button>
                 <button id="playAndPause" onclick="togglePlaySimulation()">Play/Pause</button>
                 <button id="speedMultiplier" onclick="speedUpSimulation('speedMultiplier')">1x Speed</button>
+                <button id="zoomAmount" onclick="zoomIn('zoomAmount')">1/1x Zoom</button>
                 <button id="focusePlanet" onclick="focusCurrentPlanet()">Center Planet</button>
                 <button id="deletePlanet" onclick="deleteCurrentPlanet()">Delete Planet</button>
                 <div class="input_container">
@@ -40,8 +43,12 @@
                 <!--#endregion sliders-->
                 <!--#region toggles-->
                 <div class="input_container">
+                    <label for="selectMode">Select Mode: </label>
+                    <input type="checkbox" class="toggle" id="selectMode">
+                </div>
+                <div class="input_container">
                     <label for="showPaths">Paths: </label>
-                    <input type="checkbox" class="toggle" id="showPaths">
+                    <input type="checkbox" class="toggle" checked="true" id="showPaths">
                 </div>
                 <div class="input_container">
                     <label for="showVels">Velocities: </label>
@@ -50,6 +57,10 @@
                 <div class="input_container">
                     <label for="showForces">Forces: </label>
                     <input type="checkbox" class="toggle" id="showForces">
+                </div>
+                <div class="input_container">
+                    <label for="showStars">Stars: </label>
+                    <input type="checkbox" class="toggle" checked="true" id="showStars">
                 </div>
                 <!--#endregion toggles-->
             </div>

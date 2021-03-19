@@ -6,11 +6,11 @@
 
 .topnav {
     background-color: #3a3a3a;
-    position: fixed;
+    position: relative;
     width: 100%;
     left: 0px;
     top: 0px;
-    padding: 15px;
+    padding: 15px 0px;
 }
 .topnav a {
     color: #fafafa;
@@ -24,9 +24,12 @@
     text-decoration: underline;
     outline: none;
 }
+html {
+    scroll-behavior: smooth;
+}
 body {
     background-color: #fafafa;
-    margin-top: 65px; /* make space for topnav */
+    margin: 0px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -65,8 +68,9 @@ Simulation interaction elements
 .simulation_space {
     background-color: #3a3a3a;
     display: flex;
-    padding: 5px;
-    width: 98%;
+    flex-wrap: wrap;
+    padding: 0px 0px 5px 0px;
+    width: 100%;
 }
 
 .sim_buttons_container {
@@ -75,9 +79,10 @@ Simulation interaction elements
     display:flex;
     flex-direction:row;
     flex-wrap: wrap;
-    justify-content: flex-start;
-    align-items: center;
-    height: max-content;
+    justify-content: space-around;
+    align-content: center;
+    width: 100%;
+    height:fit-content;
 }
 .sim_buttons_container .input_container {
     display: flex;
@@ -90,7 +95,7 @@ Simulation interaction elements
 .sim_buttons_container .input_container label {
     width: min-content;
 }
-/* ========= buttons ========== */
+    /* ========= buttons ========== */
 .sim_buttons_container button {
     background-color: #5298b9;
     border-color: #5298b9;

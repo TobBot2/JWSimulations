@@ -2,8 +2,10 @@
  * Gravity Simulation's main js file. 
  * TODO:
  * Add collision?
- * Fix velocities in presets so they scale accordingly
+ * Fix velocities in presets so they scale accordingly 
+ *  - CHANGE g constant based on units (multiply by scale^2? and divide by mass scale^2?)
  * Add gamey elements (coins, preset 'problems', sound?)
+ * Add tooltips for inputs (instead of "How To Use" section?)
  */
 
 const canvas = document.getElementById("gameCanvas");

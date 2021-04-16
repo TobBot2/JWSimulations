@@ -55,6 +55,22 @@ Simulation information elements
     margin-top: 5px;
     text-indent: 6ch;
     text-align: justify;
+    line-height: 2em;
+}
+.simulation_info var {
+    font-family:'Courier New', Courier, monospace;
+    font-style: normal;
+}
+.simulation_info var.eq::before{
+    content: "";
+    white-space: pre;
+}
+.simulation_info var.eq::after{
+    content: "";
+    white-space: pre;
+}
+.simulation_info var.eq {
+    text-align: center;
 }
 .simulation_info img {
     align-self: center;

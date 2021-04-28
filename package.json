@@ -1,0 +1,26 @@
+{
+  "name": "jwsimulations",
+  "version": "1.0.0",
+  "description": "This is my Junior Workshop project for school. It is a website that houses different physics simulations.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TobBot2/JWSimulations.git"
+  },
+  "keywords": [
+    "workshop",
+    "simulations"
+  ],
+  "author": "Trevor Black",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TobBot2/JWSimulations/issues"
+  },
+  "homepage": "https://github.com/TobBot2/JWSimulations#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}

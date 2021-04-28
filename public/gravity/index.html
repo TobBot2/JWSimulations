@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>Gravity</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="presets.js" async></script>
+        <script src="planet.js" async></script>
+        <script src="game.js" async></script>
+        <script src="../css/csshelper.js" async></script>
+        <link rel="stylesheet" href="../css/main.css"></link>
+    </head>
+    <body>
+        <div class="topnav">
+            <a href="../index.html">Home</a>
+        </div>
+
+        <div class="simulation_space">
+            <canvas id="gameCanvas" style="background-color: black" width="1000" height="675">
+                Your browser does not support the html canvas element. Try updating or switching browsers</canvas>
+            <noscript>Javascript is disabled by your browser, so the simulation will not work</noscript>
+            <div class="sim_buttons_container">
+                <button onclick="document.getElementById('gameCanvas').scrollIntoView(true)">Cinema</button>
+                <button id="resetSimulation" onclick="resetSimulation()">Rewind</button>
+                <button id="playAndPause" onclick="togglePlaySimulation()">Play/Pause</button>
+                <button id="speedMultiplier" onclick="speedUpSimulation('speedMultiplier')">1x Speed</button>
+                <button id="zoomAmount" onclick="zoomIn('zoomAmount')">1/1x Zoom</button>
+                <button id="focusePlanet" onclick="focusCurrentPlanet()">Center Planet</button>
+                <button id="deletePlanet" onclick="deleteCurrentPlanet()">Delete Planet</button>
+                <div class="input_container">
+                    <label for="planetColor">Color: </label>
+                    <input type="color" class="color" value="#5298b9" id="planetColor">
+                </div>
+                <!--#region sliders-->
+                <div class="input_container">
+                    <label for="massSlider">Mass<span>: 50</span></label>
+                    <input type="range" min="1" max="100" value="50" class="slider" id="massSlider">
+                </div>
+                <div class="input_container">
+                    <label for="sizeSlider">Size<span>: 50</span></label>
+                    <input type="range" min="1" max="100" value="50" class="slider" id="sizeSlider">
+                </div>
+                <!--#endregion sliders-->
+                <!--#region toggles-->
+                <div class="input_container">
+                    <label for="selectMode">Select Mode: </label>
+                    <input type="checkbox" class="toggle" id="selectMode">
+                </div>
+                <div class="input_container">
+                    <label for="showPaths">Paths: </label>
+                    <input type="checkbox" class="toggle" checked="true" id="showPaths">
+                </div>
+                <div class="input_container">
+                    <label for="showVels">Velocities: </label>
+                    <input type="checkbox" class="toggle" checked="true" id="showVels">
+                </div>
+                <div class="input_container">
+                    <label for="showForces">Forces: </label>
+                    <input type="checkbox" class="toggle" id="showForces">
+                </div>
+                <div class="input_container">
+                    <label for="showStars">Stars: </label>
+                    <input type="checkbox" class="toggle" checked="true" id="showStars">
+                </div>
+                <!--#endregion toggles-->
+            </div>
+        </div>
+
+        <div class="simulation_info">
+            <article>
+                <h1>How To Use</h1>
+                <p>
+                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. At exercitationem repudiandae veritatis repellendus? Necessitatibus cumque enim doloremque alias dolorem natus maxime veritatis sint. Minus ad, similique quas a alias eius ipsam laboriosam enim debitis fugit quam omnis reprehenderit aspernatur natus nostrum asperiores numquam culpa odio illo sequi dolorum quae aperiam reiciendis perferendis. Velit, aut. Quibusdam ab molestiae tempore, ipsam blanditiis voluptates ipsa nobis explicabo sequi vitae modi, nostrum dolor optio. Aperiam ad velit facere odit iusto repellendus est vero autem, voluptas omnis soluta, dolorem adipisci, corrupti provident esse consequatur commodi sed laboriosam qui quis beatae et. Iste, excepturi! Enim, culpa.
+                </p>
+            </article>
+
+            <article>
+                <h1>Gravity</h1>
+                <p>
+                    Gravity is a force of attraction depicted by the formula 
+                    <var class="eq">F<sub>g</sub> = Gm<sub>1</sub>m<sub>2</sub>/r<sup>2</sup></var>.
+                    <var>G</var> is the gravitational constant (0000000000.6 Nm<sup>2</sup>/kg<sup>2</sup>). <var>m1</var> and <var>m2</var> are the masses of the two objects interacting. Finally, <var>r</var> is the distance between the two objects. This formula states that the forces exerted on each object are actually equal. For example you have as much pull on the Earth as the Earth has on you, however the Earth practically is unaffected by your gravitational pull because <var>F = ma</var>, or rewritten as <var>a = F/m</var>, so the acceleration of an object is dependent on the force divided by the mass. 
+                    <br><br>
+                    Doing some simple algebra will let us see this more clearly. If we let <var>m<sub>1</sub></var> equal the mass of the Earth, and <var>m<sub>2</sub></var> the mass of you, the force exerted on you would be defined by
+                    <var class="eq">F<sub>2</sub> = Gm<sub>1</sub>m<sub>2</sub>/r<sup>2</sup></var>
+                    Armed with the equation <var>F = ma</var>, we can divide to get 
+                    <var class="eq">F<sub>2</sub>/m<sub>2</sub> = Gm<sub>1</sub>m<sub>2</sub>/m<sub>2</sub>r<sup>2</sup></var>
+                    Then substitute and simplify, and we get 
+                    <var class="eq">a<sub>2</sub> = Gm<sub>2</sub>/r<sup>2</sup></var>
+                    We divide by m<sub>2</sub>, your mass, because we are finding your force. Now it is clear that the acceleration is only dependent on the mass of the other object. Which is why the Earth is practically unmoving whereas you are pushed toward it at 9.8 m/s<sup>2</sup>
+                    <br><br>
+                    Since the Earth is so massive, the acceleration shrinks because the mass is in the denominator. In the gravitational formula, there is no mention of volume, so it does not matter how large an object is, its force will only be dependent on the masses. 
+                    <br><br>
+                    In the famous experiment first constructed by astronomer Galileo and later conducted by astronaut David Scott, a feather and hammer fall at the same rate when on the moon. This happened because the moon pulls equally on all objects regardless of mass. 
+                    <br><br>
+                    If we take a similar example and let <var>m<sub>1</sub></var> equal the mass of the Moon, <var>m<sub>2</sub></var> the mass of the hammer, and <var>m<sub>3</sub></var> the mass of the feather, we can define the forces exerted on the two objects as 
+                    <var class="eq">F<sub>2</sub> = Gm<sub>1</sub>m<sub>2</sub>/r<sup>2</sup></var>
+                    and
+                    <var class="eq">F<sub>3</sub> = Gm<sub>1</sub>m<sub>3</sub>/r<sup>2</sup></var>
+                    We can then divide both sides of each equation by their respective masses, and then substitute and simplify the same way we did earlier.
+                    <var class="eq">a<sub>2</sub> = Gm<sub>1</sub>/r<sup>2</sup></var> 
+                    for the hammer, and 
+                    <var class="eq">a<sub>3</sub> = Gm<sub>1</sub>/r<sup>2</sup></var> 
+                    for the feather. Notice how they are so similar? Because <var>G</var> and <var>m<sub>1</sub></var> refer to the same variable, the only difference is <var>r</var>, therefore, the acceleration due to gravity is the same for all objects on any given planet (or moon) so long as they are dropped at the same height. The reason they fall at different rates on Earth is because of the atmosphere.
+
+
+                </p>
+                
+            </article>
+
+            <article>
+                <h1>Coding Implementation</h1>
+                <p>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam nihil, cupiditate facere blanditiis fuga tempore quaerat quibusdam magnam deserunt, autem, vel eaque. Harum earum expedita et iusto obcaecati quas minus porro. Quia neque, illo veniam incidunt, saepe hic earum, fuga laudantium rerum inventore eligendi praesentium temporibus numquam at optio autem cumque. Magni error hic explicabo cum culpa quisquam, labore et enim odio quia tenetur consectetur inventore at voluptatibus molestiae eaque perspiciatis expedita facilis unde similique.
+                </p>
+            </article>
+        </div>
+    </body>
+</html>

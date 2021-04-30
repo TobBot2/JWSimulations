@@ -45,7 +45,7 @@ for (let i = 0; i < 50; i++){
     stars.push( { x: Math.random() * canvas.width, y: Math.random() * canvas.height, r: Math.random() * 3} );
 }
 
-loadPreset(0);
+//loadPreset(0);
 
 function getMouse(e){ // parameter is a MouseEvent
     // https://stackoverflow.com/questions/3234256/find-mouse-position-relative-to-element

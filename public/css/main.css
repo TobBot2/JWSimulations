@@ -24,7 +24,13 @@
     text-decoration: underline;
     outline: none;
 }
-.simulation_navigation {
+
+/*
+==============================
+===== Simulation Gallery =====
+==============================
+*/
+.gallery {
     background: #fafafa;
     display: flex;
     flex-direction: row;
@@ -33,22 +39,37 @@
     align-items: center;
     
     width: 50%;
+    height: 100%;
     transform:translateX(50%);
 }
-.simulation_navigation a {
-    margin: 20px;
-    padding: 15px;
+.gallery figure {
     background: #3a3a3a;
+    border: 2px solid #fafafa;
+    padding-bottom: 5px;
+}
+.gallery figure img {
+    width: 256px;
+    height: 194px;
     color: #fafafa;
+}
+.gallery figure figcaption {
+    color:#fafafa;
+    text-align: center;
+}
+.gallery figure:hover,
+.gallery figure:focus {
+    border: 2px solid #5298b9;
+    color: #5298b9;
+}
+.gallery figure a {
     text-decoration: none;
 }
-.simulation_navigation a:hover,
-.simulation_navigation a:focus {
-    color: #5298b9;
-    text-decoration: underline;
-    outline: none;
-}
 
+/*
+====================
+Text Standardization
+====================
+*/
 html {
     scroll-behavior: smooth;
 }

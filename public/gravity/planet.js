@@ -145,8 +145,10 @@ class Planet {
         ctx.strokeStyle = "blue";
         ctx.fillStyle = "blue";
         ctx.lineWidth = 5;
-        const acc = this.calculateAcc(this.x, this.y);
-        this.renderArrow(ctx, this.x, this.y, this.x + acc.x/velDampener*30, this.y + acc.y/velDampener*30); // *30 to exaggerate it a bit
+        let force = this.calculateAcc(this.x, this.y);
+        force.x *= this.mass;
+        force.y *= this.mass;
+        this.renderArrow(ctx, this.x, this.y, this.x + force.x/velDampener*10, this.y + force.y/velDampener*10); // *10 to exaggerate it a bit
     }
     renderVel(ctx){
         ctx.strokeStyle = "red";

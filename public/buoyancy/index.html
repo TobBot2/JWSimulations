@@ -22,8 +22,12 @@
                 <!-- INPUT ELEMENTS ----------------------------------------------------------------------->
                 <button onclick="document.getElementById('gameCanvas').scrollIntoView(true)">Cinema</button>
                 <div class="input_container">
-                    <label for="densitySlider">Density<span>: 50</span></label>
-                    <input type="range" min="1" max="100" value="50" class="slider" id="densitySlider">
+                    <label for="densitySlider">Fluid Density<span>: 1</span></label>
+                    <input type="range" min="0" max="15" value="3.2" step=".1" class="slider" id="densitySlider">
+                </div>
+                <div class="input_container">
+                    <label for="toyDensitySlider">Toy Density<span>: .8</span></label>
+                    <input type="range" min=".1" max="20" value="">
                 </div>
             </div>
         </div>

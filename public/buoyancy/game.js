@@ -1,20 +1,24 @@
 const canvas = document.getElementById("gameCanvas");
+const fluidDensity = document.getElementById("densitySlider");
 
 const ctx = canvas.getContext('2d');
 
-canvas.width = window.innerWidth;
+canvas.width = window.innerWidth - 17; // -17 for scrollbar width
 canvas.height = window.innerHeight;
 
 const fluidRestingHeight = .5 * canvas.height;
 let fluidHeight = fluidRestingHeight;
 const fluidWidth = canvas.width * .6; // no physics beyond this point
 
-let fluidDensity = .01;
-
 const gravity = 1;
-const friction = .95;
+const airFric = .99;
+const fluidFric = .95;
 
 const allToys = [];
+
+let selectedToy = null;
+let grabbing = false;
+let mouse = { x:0, y:0 };
 
 /****************************************/
 /************* CREATE TOYS **************/
@@ -28,7 +32,7 @@ let circlePath = (resolution, r) => { // generate circle path with 'resolution' 
 }
 
 allToys.push(new Toy( // Simple rectangle (400x200)
-    fluidWidth/2, 10, 200, // X, Y, MASS
+    fluidWidth/2, 10, 400*200 * 2, // X, Y, MASS
     [-200,-100, 200,-100, 200,100, -200,100], // RENDER PATH
     // FIND AREA OF WATER DISPLACED
     y => {
@@ -42,48 +46,109 @@ allToys.push(new Toy( // Simple rectangle (400x200)
 ));
 
 allToys.push(new Toy( // Simple circle (r=20)
-    fluidWidth +75, canvas.height -50, 1, // x, y, mass
-    circlePath(36, 20), // RENDER PATH
+    fluidWidth +75, canvas.height -50, 88*88, // x, y, mass
+    circlePath(36, 50), // RENDER PATH
     // FIND AREA OF WATER DISPLACED, approximate using a square cuz I don't want to implement integrals
     y => {
-        let toyHeight = y+10 - fluidHeight;
-        let approxWidth = 36; // square this size has same area as circle with r=20
+        let toyHeight = y+50 - fluidHeight;
+        let approxWidth = 88; // square this size has same area as circle with r=50
         if (toyHeight > 0)
             return Math.min(toyHeight * approxWidth, approxWidth * approxWidth);
         else return 0;
     },
     // CHECK IF MOUSE IS OVER
     (x, y, mouseX, mouseY) => {
-        return (x-mouseX)*(x-mouseX) + (y-mouseY)*(y-mouseY) < 10*10;
+        return (x-mouseX)*(x-mouseX) + (y-mouseY)*(y-mouseY) < 50*50;
     }
 ));
 
+/**********************************/ // TODO: add this to a utils.js file?
+/************* UTILS **************/
 /**********************************/
-/*********** MAIN LOOPS ***********/
+
+function getMouse(e){ // parameter is a MouseEvent
+    // https://stackoverflow.com/questions/3234256/find-mouse-position-relative-to-element
+    let mouseX = e.pageX - e.currentTarget.offsetLeft;
+    let mouseY = e.pageY - e.currentTarget.offsetTop;
+
+    return { x: mouseX, y: mouseY }
+}
+
 /**********************************/
+/********* MAIN FUNCTIONS *********/
+/**********************************/
+function parallelDisplace(iterations = 5) {
+    let displacements = [];
+    let prevDisplacements = [];
+    for (let i = 0; i < allToys.length; i++){ // initialize arrays
+        displacements.push(0);
+        prevDisplacements.push(0);
+    }
+
+    for (let i = 0; i < iterations; i++){ // iteratively...
+        // STEP 1: find how much each toy displaces the water
+        for (let j = 0; j < allToys.length; j++){
+            if (allToys[j].x + allToys[j].width/2 < fluidWidth){
+                displacements[j] = allToys[j].displace();
+            }
+        }
+        // STEP 2: displace the water
+        for (let j = 0; j < displacements.length; j++){
+            fluidHeight -= displacements[j]; // compute current displacements
+            fluidHeight += prevDisplacements[j]; // cancel previous displacements
+            prevDisplacements[j] = displacements[j];
+        }
+        // REPEAT iterations NUMBER OF TIMES
+    }
+}
 
 function update(){
     fluidHeight = fluidRestingHeight;
+    
+    parallelDisplace();
+
     for (const t of allToys){
-        t.update();
+        t.updateVels();
+        if (!grabbing || t != selectedToy){
+            t.move();
+        }
+    }
+    if (grabbing){
+        selectedToy.grab();
     }
 }
 function render(){
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "dimgrey";
     ctx.fillRect(0,0,canvas.width,canvas.height);
     
+    // draw water
     ctx.fillStyle = "cornflowerblue";
     ctx.fillRect(0,fluidHeight,fluidWidth,canvas.height-fluidHeight);
 
+    // draw toys
     for (const t of allToys){
         t.render(ctx);
     }
 
+    // tints things underwater blue
     ctx.fillStyle = "cornflowerblue";
     ctx.globalAlpha = .5;
     ctx.fillRect(0,fluidHeight,fluidWidth,canvas.height-fluidHeight);
     ctx.globalAlpha = 1;
 
+    // highlight selected toy
+    if (selectedToy != null){
+        ctx.strokeStyle = "red";
+        ctx.beginPath();
+        ctx.moveTo(selectedToy.x + selectedToy.path[0],selectedToy.y + selectedToy.path[1]);
+        for (let i = 2, n = selectedToy.path.length-1; i < n; i += 2){
+            ctx.lineTo(selectedToy.x + selectedToy.path[i],selectedToy.y + selectedToy.path[i+1]);
+        }
+        ctx.closePath();
+        ctx.stroke();
+    }
+
+    // resting waterline
     ctx.strokeStyle = "red";
     ctx.beginPath();
     ctx.moveTo(0,canvas.height-fluidRestingHeight);
@@ -100,3 +165,39 @@ function game_loop(){
 }
 
 game_loop();
+
+/**************************/
+/***** EVENT LISTENERS ****/
+/**************************/
+
+// simulation interactive pieces
+
+
+// mouse events
+canvas.onmousedown = e => {
+    mouse = getMouse(e);
+    for (const t of allToys){
+        if (t.mouseoverFunction(t.x, t.y, mouse.x, mouse.y)){
+            selectedToy = t;
+            grabbing = true;
+
+            t.mouseDiff.x = -mouse.x + t.x;
+            t.mouseDiff.y = -mouse.y + t.y;
+            
+            return;
+        }
+    }
+    selectedToy = null;
+    grabbing = false;
+};
+canvas.onmouseup = e => {
+    if (grabbing){
+        selectedToy.mouseDiff.x = 0;
+        selectedToy.mouseDiff.y = 0;
+
+        grabbing = false;
+    }
+}
+canvas.onmousemove = e => {
+    mouse = getMouse(e);
+}

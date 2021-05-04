@@ -19,6 +19,8 @@ class Toy {
         this.color = "hsl(" + Math.random() * 255 + ", 80%, 80%)";
 
         this.mouseDiff = { x:0, y:0 };
+
+        this.densityMultiplier = 1;
     }
     findWidth(){
         let farthestRight = 0;
@@ -42,9 +44,9 @@ class Toy {
         let forceY = 0;
         if (this.x+this.width/2 < fluidWidth) // only follow buoyancy physics if it gets in the zone- the fluid zone.
             forceY -= fluidDensity.value * gravity * this.areaFunction(this.y); // buoyancy force F = -pgV
-        forceY += gravity * this.mass; // gravity
+        forceY += gravity * this.mass * this.densityMultiplier; // gravity
         
-        this.velY += forceY / this.mass;
+        this.velY += forceY / (this.mass * this.densityMultiplier);
 
         if (this.x+this.width/2 < fluidWidth){
             this.velY *= fluidFric;
@@ -55,13 +57,11 @@ class Toy {
         }
     }
     displace(){
-        let displacementArea = this.areaFunction(this.y); // dependent on fluidHeight, so fluidHeight must change each recursion.
-
         return this.areaFunction(this.y) / fluidWidth
     }
     grab(){
-        this.velX = -this.x + (mouse.x + this.mouseDiff.x);
-        this.velY = -this.y + (mouse.y + this.mouseDiff.y);
+        this.velX = -this.x + (mouse.x + this.mouseDiff.x); // new position minus old position
+        this.velY = -this.y + (mouse.y + this.mouseDiff.y); //   (vel is change in position)
 
         this.x = mouse.x + this.mouseDiff.x;
         this.y = mouse.y + this.mouseDiff.y;

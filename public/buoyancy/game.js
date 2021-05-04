@@ -1,5 +1,6 @@
 const canvas = document.getElementById("gameCanvas");
 const fluidDensity = document.getElementById("densitySlider");
+const toyDensity = document.getElementById("toyDensitySlider");
 
 const ctx = canvas.getContext('2d');
 
@@ -32,7 +33,7 @@ let circlePath = (resolution, r) => { // generate circle path with 'resolution' 
 }
 
 allToys.push(new Toy( // Simple rectangle (400x200)
-    fluidWidth/2, 10, 400*200 * 2, // X, Y, MASS
+    fluidWidth/2, 10, 400*200, // X, Y, MASS (set mass so density is 1)
     [-200,-100, 200,-100, 200,100, -200,100], // RENDER PATH
     // FIND AREA OF WATER DISPLACED
     y => {
@@ -51,9 +52,9 @@ allToys.push(new Toy( // Simple circle (r=20)
     // FIND AREA OF WATER DISPLACED, approximate using a square cuz I don't want to implement integrals
     y => {
         let toyHeight = y+50 - fluidHeight;
-        let approxWidth = 88; // square this size has same area as circle with r=50
+        let approxWidth = 50*50*Math.PI / (50+50); // area of circle over the max height
         if (toyHeight > 0)
-            return Math.min(toyHeight * approxWidth, approxWidth * approxWidth);
+            return Math.min(toyHeight * approxWidth, (50+50) * approxWidth);
         else return 0;
     },
     // CHECK IF MOUSE IS OVER
@@ -109,7 +110,12 @@ function update(){
 
     for (const t of allToys){
         t.updateVels();
-        if (!grabbing || t != selectedToy){
+        if (t == selectedToy){
+            if (!grabbing){
+                t.move();
+            }
+            t.densityMultiplier = toyDensity.value;
+        }else {
             t.move();
         }
     }
@@ -183,6 +189,8 @@ canvas.onmousedown = e => {
 
             t.mouseDiff.x = -mouse.x + t.x;
             t.mouseDiff.y = -mouse.y + t.y;
+
+            toyDensity.value = t.densityMultiplier;
             
             return;
         }

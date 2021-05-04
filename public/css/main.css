@@ -38,9 +38,8 @@
     justify-content: space-evenly;
     align-items: center;
     
-    width: 50%;
+    width: min-content * 2;
     height: 100%;
-    transform:translateX(50%);
 }
 .gallery figure {
     background: #3a3a3a;

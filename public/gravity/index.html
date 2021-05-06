@@ -24,10 +24,10 @@
                 <button id="resetSimulation" onclick="resetSimulation()">Rewind</button>
                 <button id="playAndPause" onclick="togglePlaySimulation()">Play/Pause</button>
                 <div class="input_container">
-                    <span id="zoomDisplay" style="white-space: pre;">Zoom: <br>1</span>
+                    <span id="zoomDisplay" style="white-space: pre;">Zoom: <br>1x</span>
                 </div>
                 <div class="input_container">
-                    <span id="simSpeedDisplay" style="white-space: pre;">Simulation Speed: <br>1</span>
+                    <span id="simSpeedDisplay" style="white-space: pre;">Simulation Speed: <br>1x</span>
                 </div>
                 <button id="focusePlanet" onclick="focusCurrentPlanet()">Center Planet</button>
                 <button id="placePlanet" onclick="primePlace()">Place Planet</button>
@@ -37,12 +37,12 @@
                 </div>
                 <!--#region sliders-->
                 <div class="input_container">
-                    <label for="massSlider">Mass<span>: 50</span></label>
-                    <input type="range" min="1" max="100" value="50" class="slider" id="massSlider">
+                    <label for="massSlider">Mass<span>: 500</span></label>
+                    <input type="range" min="1" max="1000" value="500" class="slider" id="massSlider">
                 </div>
                 <div class="input_container">
-                    <label for="sizeSlider">Size<span>: 50</span></label>
-                    <input type="range" min="1" max="100" value="50" class="slider" id="sizeSlider">
+                    <label for="sizeSlider">Size<span>: 250</span></label>
+                    <input type="range" min="5" max="500" value="250" class="slider" id="sizeSlider">
                 </div>
                 <!--#endregion sliders-->
                 <!--#region toggles-->
@@ -85,6 +85,14 @@
                     The 'Center Planet' button displays everything relative to the selected planet.
                     
                     Adjust the sliders below the simulation to adjust the mass and size of the planet you will place.
+
+                    Press backspace or delete to remove the selected planet.
+
+                    The 'Cinema' button centers the simulation on the screen.
+
+                    The 'Navigate Mode' checkbox doesn't work yet.
+
+                    The 'Paths,' 'Velocities,' 'Forces,' and 'Stars' checkboxes toggle whether each respective element is rendered. (unchecking the 'Paths' checkbox will improve the framerate)
                 </p>
             </article>
 

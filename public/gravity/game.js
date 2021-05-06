@@ -160,8 +160,10 @@ function update(){
         }
     } else {
         if (grab.grabbing && sPlanetIndex != -1 && !navigateMode.checked){
-            allPlanets[sPlanetIndex].x = mouse.x + grab.xDiff;
-            allPlanets[sPlanetIndex].y = mouse.y + grab.yDiff;
+            allPlanets[sPlanetIndex].initX = mouse.x + grab.xDiff;
+            allPlanets[sPlanetIndex].initY = mouse.y + grab.yDiff;
+            allPlanets[sPlanetIndex].applyInitValues();
+            clearVelsInPaths();
         }else if (navigateMode.checked){
             xTranslate = mouse.x + grab.xDiff;
             yTranslate = mouse.y + grab.yDiff;
@@ -309,15 +311,16 @@ window.onkeydown = e => {
     // ZOOM IN/OUT -------------------------------------------------
     if (key == 38){ // up arrowkey
         e.preventDefault();
-        zoom += .25;
+        zoom += .1;
     }else if (key == 40){ // down arrowkey
         e.preventDefault();
-        zoom -= .25;
+        zoom -= .1;
         if (zoom <= 0){
-            zoom = .25;
+            zoom = .1;
         }
     }
-    zoomDisplay.textContent = "Zoom: \r\n" + zoom;
+    zoom = parseFloat(zoom.toFixed(2));
+    zoomDisplay.textContent = "Zoom: \r\n" + zoom + "x";
 
     if (key == 39){ // right arrowkey
         simSpeed++;
@@ -327,7 +330,7 @@ window.onkeydown = e => {
             simSpeed = 1;
         }
     }
-    simSpeedDiplay.textContent = "Simulation Speed: \r\n" + simSpeed;
+    simSpeedDiplay.textContent = "Simulation Speed: \r\n" + simSpeed + "x";
 
     if (key == 32){ // space bar
         togglePlaySimulation();
@@ -342,6 +345,8 @@ window.onkeydown = e => {
             }
             sPlanetIndex = -1;
             clearVelsInPaths();
+        }else {
+            alert("you must select a planet to delete it");
         }
     }
 }

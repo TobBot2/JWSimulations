@@ -23,10 +23,14 @@
                 <button onclick="document.getElementById('gameCanvas').scrollIntoView(true)">Cinema</button>
                 <button id="resetSimulation" onclick="resetSimulation()">Rewind</button>
                 <button id="playAndPause" onclick="togglePlaySimulation()">Play/Pause</button>
-                <button id="speedMultiplier" onclick="speedUpSimulation('speedMultiplier')">1x Speed</button>
-                <button id="zoomAmount" onclick="zoomIn('zoomAmount')">1/1x Zoom</button>
+                <div class="input_container">
+                    <span id="zoomDisplay" style="white-space: pre;">Zoom: <br>1</span>
+                </div>
+                <div class="input_container">
+                    <span id="simSpeedDisplay" style="white-space: pre;">Simulation Speed: <br>1</span>
+                </div>
                 <button id="focusePlanet" onclick="focusCurrentPlanet()">Center Planet</button>
-                <button id="deletePlanet" onclick="deleteCurrentPlanet()">Delete Planet</button>
+                <button id="placePlanet" onclick="primePlace()">Place Planet</button>
                 <div class="input_container">
                     <label for="planetColor">Color: </label>
                     <input type="color" class="color" value="#5298b9" id="planetColor">
@@ -43,8 +47,8 @@
                 <!--#endregion sliders-->
                 <!--#region toggles-->
                 <div class="input_container">
-                    <label for="selectMode">Select Mode: </label>
-                    <input type="checkbox" class="toggle" id="selectMode">
+                    <label for="navigateMode">Navigate Mode: </label>
+                    <input type="checkbox" class="toggle" id="navigateMode">
                 </div>
                 <div class="input_container">
                     <label for="showPaths">Paths: </label>
@@ -70,7 +74,17 @@
             <article>
                 <h1>How To Use</h1>
                 <p>
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. At exercitationem repudiandae veritatis repellendus? Necessitatibus cumque enim doloremque alias dolorem natus maxime veritatis sint. Minus ad, similique quas a alias eius ipsam laboriosam enim debitis fugit quam omnis reprehenderit aspernatur natus nostrum asperiores numquam culpa odio illo sequi dolorum quae aperiam reiciendis perferendis. Velit, aut. Quibusdam ab molestiae tempore, ipsam blanditiis voluptates ipsa nobis explicabo sequi vitae modi, nostrum dolor optio. Aperiam ad velit facere odit iusto repellendus est vero autem, voluptas omnis soluta, dolorem adipisci, corrupti provident esse consequatur commodi sed laboriosam qui quis beatae et. Iste, excepturi! Enim, culpa.
+                    Click the 'Place Planet' button, then left-click on the simulation to place it.
+
+                    Use the left/right arrowkeys to change the simulation speed.
+
+                    Use the up/down arrowkeys to change the zoom of the simulation.
+
+                    Set the velocity of a planet by clicking on it to select it, then right clicking to set the velocity.
+                    
+                    The 'Center Planet' button displays everything relative to the selected planet.
+                    
+                    Adjust the sliders below the simulation to adjust the mass and size of the planet you will place.
                 </p>
             </article>
 

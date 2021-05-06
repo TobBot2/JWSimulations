@@ -12,16 +12,24 @@ const canvas = document.getElementById("gameCanvas");
 const colorInput = document.getElementById("planetColor");
 const massInput = document.getElementById("massSlider");
 const sizeInput = document.getElementById("sizeSlider");
-const selectModeInput = document.getElementById("selectMode");
+const navigateMode = document.getElementById("navigateMode");
 const showPathsInput = document.getElementById("showPaths");
 const showVelsInput = document.getElementById("showVels");
 const showForcesInput = document.getElementById("showForces");
 const showStarsInput = document.getElementById("showStars");
 
+const zoomDisplay = document.getElementById("zoomDisplay");
+const simSpeedDiplay = document.getElementById("simSpeedDisplay");
+
 const ctx = canvas.getContext("2d");
 
 canvas.width = window.innerWidth - 17; // - 17 for scrollbar
 canvas.height = window.innerHeight;
+
+let mouse = {
+    x: 0,
+    y: 0
+};
 
 const gConst = 1; // gravitational constant (kind of works like the speed too)
 const velDampener = .005; // dampens velocity so pixel size and in-code vel are not 1:1
@@ -30,10 +38,19 @@ const allPlanets = [];
 let sPlanetIndex = -1; // selected planet index
 let fPlanetIndex = -1; // focused planet index
 
+let placing = false;
+let grab = {
+    grabbing: false,
+    xDiff: 0,
+    yDiff: 0
+}
+
 let playing = false;
 let atStart = true;
 let simSpeed = 1;
 let zoom = 1;
+let xTranslate = 0;
+let yTranslate = 0;
 let pathStats = {
     size: 0,
     maxSize: 30000,
@@ -45,8 +62,6 @@ for (let i = 0; i < 50; i++){
     stars.push( { x: Math.random() * canvas.width, y: Math.random() * canvas.height, r: Math.random() * 3} );
 }
 
-//loadPreset(0);
-
 function getMouse(e){ // parameter is a MouseEvent
     // https://stackoverflow.com/questions/3234256/find-mouse-position-relative-to-element
     let mouseX = e.pageX - e.currentTarget.offsetLeft;
@@ -55,8 +70,8 @@ function getMouse(e){ // parameter is a MouseEvent
     mouseX /= zoom;
     mouseY /= zoom;
 
-    mouseX += canvas.width / 2 * (1 - 1/zoom);
-    mouseY += canvas.height / 2 * (1 - 1/zoom);
+    mouseX += (canvas.width / 2 + xTranslate) * (1 - 1/zoom);
+    mouseY += (canvas.height / 2 + yTranslate) * (1 - 1/zoom);
 
     if (fPlanetIndex != -1){ // if centered on planet, adjust
         const p = allPlanets[fPlanetIndex];
@@ -72,20 +87,6 @@ function togglePlaySimulation(){
     sPlanetIndex = -1;
     atStart = false;
 }
-function speedUpSimulation(buttonID){
-    simSpeed *= 2;
-    if (simSpeed > 4) simSpeed = 1;
-    document.getElementById(buttonID).innerHTML = simSpeed + "x Speed";
-}
-function zoomIn(buttonID){
-    zoom /= 2;
-    if (zoom < 1/8) zoom = 8;
-    if (zoom < 1)
-        document.getElementById(buttonID).innerHTML = "1/" + 1/zoom + "x Zoom";
-    else {
-        document.getElementById(buttonID).innerHTML = zoom + "/1" + "x Zoom";
-    }
-}
 function resetSimulation(){
     playing = false;
     atStart = true;
@@ -93,17 +94,19 @@ function resetSimulation(){
         p.resetSimulation();
     }
 }
-function deleteCurrentPlanet(){
-    if (sPlanetIndex != -1){
-        allPlanets.splice(sPlanetIndex, 1);
-        if (fPlanetIndex == sPlanetIndex)
-            fPlanetIndex = -1;
-        sPlanetIndex = -1;
-    }
-    clearVelsInPaths();
-}
 function focusCurrentPlanet(){
     fPlanetIndex = sPlanetIndex;
+
+    if (fPlanetIndex == -1){
+        alert("You must select a planet first in order to center it");
+    }
+}
+function primePlace(){
+    if (!atStart) {
+        alert("You can only place planets at the start of the simulation!");
+        return;
+    }
+    placing = !placing;
 }
 function loadPreset(i){ // i is the index in presets.json
     resetSimulation();
@@ -114,6 +117,8 @@ function loadPreset(i){ // i is the index in presets.json
         case(0):
             dstScale = canvas.width * presets[i][0];
             break;
+        default:
+            dstScale = canvas.width;
     }
     for (let j = 1; j < presets[i].length; j++){
         const pInfo = presets[i][j];
@@ -154,6 +159,14 @@ function update(){
             }
         }
     } else {
+        if (grab.grabbing && sPlanetIndex != -1 && !navigateMode.checked){
+            allPlanets[sPlanetIndex].x = mouse.x + grab.xDiff;
+            allPlanets[sPlanetIndex].y = mouse.y + grab.yDiff;
+        }else if (navigateMode.checked){
+            xTranslate = mouse.x + grab.xDiff;
+            yTranslate = mouse.y + grab.yDiff;
+        }
+
         if (showPathsInput.checked && pathStats.size < pathStats.maxSize)
             calculateNextVelInPaths();
     }
@@ -161,6 +174,7 @@ function update(){
 function render(){
     ctx.clearRect(0, 0, canvas.width, canvas.height); // style, background-color is already black
 
+    // draw stars before translation
     if (showStarsInput.checked){
         for (const s of stars){ // draw stars (before translation & scale, because they are lightyears away)
             ctx.beginPath();
@@ -170,15 +184,18 @@ function render(){
             ctx.closePath();
         }
     }
-
-    let focusedTranslation = { x:canvas.width / 2 * (1-1/zoom), y:canvas.height / 2 * (1-1/zoom)};
+    
+    // translate/zoom
+    let focusedTranslation = { 
+        x:(canvas.width / 2 + xTranslate) * (1-1/zoom), 
+        y:(canvas.height / 2 + yTranslate) * (1-1/zoom)
+    };
     if (fPlanetIndex != -1) {
         focusedTranslation.x += allPlanets[fPlanetIndex].x - canvas.width/2;
         focusedTranslation.y += allPlanets[fPlanetIndex].y - canvas.height/2;
     }
     ctx.scale(zoom, zoom);
     ctx.translate(-focusedTranslation.x, -focusedTranslation.y);
-
 
     for (const p of allPlanets){ // draw planets
         p.render(ctx);
@@ -205,6 +222,16 @@ function render(){
         ctx.stroke();
         ctx.closePath();
     }
+
+    if (placing){
+        ctx.globalAlpha = .5;
+        ctx.fillStyle = colorInput.value;
+        ctx.strokeStyle = "black";
+        ctx.arc(mouse.x, mouse.y, sizeInput.value, 0,Math.PI*2,false);
+        ctx.fill();
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+    }
     
     ctx.translate(focusedTranslation.x, focusedTranslation.y);
     ctx.scale(1/zoom, 1/zoom);
@@ -219,52 +246,102 @@ function gameLoop(){
 gameLoop();
 
 // ==================== canvas mouse inputs ====================================
-canvas.onclick = e => { // ON LEFT CLICK
-    if (playing) return;
-    
-    const mouse = getMouse(e);
+canvas.onmousedown = e => { // ON LEFT CLICK    
+    mouse = getMouse(e);
 
-    if (selectModeInput.checked){ // if only selecting, then search for closest planet
-        let closestDist = Infinity;
-        for (let i = 0; i < allPlanets.length; i++){
+    if (e.button != 0) return;
+
+    grab.grabbing = false;
+
+    if (navigateMode.checked){
+        grab.grabbing = true;
+        grab.xDiff = -mouse.x;
+        grab.yDiff = -mouse.y;
+    }
+
+    // IF --NOT-- IN NAVIGATE MODE
+    if (placing){ // place planet?
+        placing = false;
+        sPlanetIndex = allPlanets.length;
+        allPlanets.push(new Planet(mouse.x, mouse.y, massInput.value, sizeInput.value, colorInput.value));
+        clearVelsInPaths();
+    }else {
+        sPlanetIndex = -1;
+
+        for (let i = 0; i < allPlanets.length; i++){ // select/grab planet?
             const p = allPlanets[i];
-            let dist = (p.x - mouse.x)*(p.x - mouse.x) + (p.y - mouse.y)*(p.y - mouse.y);
-            if (dist < closestDist){
-                sPlanetIndex = i;
-                closestDist = dist;
+            if ((p.x - mouse.x)*(p.x - mouse.x) + (p.y - mouse.y)*(p.y - mouse.y) < p.radius * p.radius){
+                if (sPlanetIndex == -1 || allPlanets[sPlanetIndex].radius > p.radius){ // select planet with smallest radius that is touching cursor
+                    sPlanetIndex = i;
+
+                    grab.grabbing = true;
+                    grab.xDiff = p.x - mouse.x;
+                    grab.yDiff = p.y - mouse.y;
+                }
             }
         }
-        return;
     }
-
-    // check if click on existing
-    for (let i = 0; i < allPlanets.length; i++){
-        const p = allPlanets[i];
-        if ((p.x - mouse.x)*(p.x - mouse.x) + (p.y - mouse.y)*(p.y - mouse.y) < p.radius * p.radius){
-            sPlanetIndex = i;
-            return;
-        }
-    }
-
-    if (!atStart) return; // so you cannot place planets mid simulation
-
-    // if not clicked anything, create new planet
-    allPlanets.push(new Planet(mouse.x, mouse.y, massInput.value, sizeInput.value, colorInput.value));
-    sPlanetIndex = allPlanets.length - 1;
-    clearVelsInPaths();
 }
-canvas.oncontextmenu = e => { // ON RIGHT CLICK
-    if (playing) return false;
-
-    const mouse = getMouse(e);
-
+canvas.onmouseup = e => {
+    grab.grabbing = false;
+}
+canvas.onmousemove = e => {
+    mouse = getMouse(e);
+}
+canvas.oncontextmenu = e => {
+    mouse = getMouse(e);
+    
     if (sPlanetIndex != -1){
         // set velocity of planet
         const p = allPlanets[sPlanetIndex];
         p.initVelX = (mouse.x - p.x) * velDampener;
         p.initVelY = (mouse.y - p.y) * velDampener;
         p.applyInitValues();
+        clearVelsInPaths();
+    }else {
+        alert("You must select a planet to set it's velocity");
     }
-    clearVelsInPaths();
-    return false; // return false so the context menu doesn't show
+
+    return false;
+}
+window.onkeydown = e => {
+    const key = e.keyCode;
+    // ZOOM IN/OUT -------------------------------------------------
+    if (key == 38){ // up arrowkey
+        e.preventDefault();
+        zoom += .25;
+    }else if (key == 40){ // down arrowkey
+        e.preventDefault();
+        zoom -= .25;
+        if (zoom <= 0){
+            zoom = .25;
+        }
+    }
+    zoomDisplay.textContent = "Zoom: \r\n" + zoom;
+
+    if (key == 39){ // right arrowkey
+        simSpeed++;
+    }else if (key == 37){ // left arrowkey
+        simSpeed--;
+        if (simSpeed <= 0){
+            simSpeed = 1;
+        }
+    }
+    simSpeedDiplay.textContent = "Simulation Speed: \r\n" + simSpeed;
+
+    if (key == 32){ // space bar
+        togglePlaySimulation();
+    }
+
+    // DELETE SELECTED PLANET --------------------------------------
+    if (key == 8 || key == 46){ // delete/backspace key
+        if (sPlanetIndex != -1){
+            allPlanets.splice(sPlanetIndex, 1);
+            if (sPlanetIndex == fPlanetIndex){
+                fPlanetIndex = -1;
+            }
+            sPlanetIndex = -1;
+            clearVelsInPaths();
+        }
+    }
 }

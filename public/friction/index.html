@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>Friction | Simulations</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="game.js" async></script>
+        <script src="../css/csshelper.js" async></script>
+        <link rel="stylesheet" href="../css/main.css"></link>
+    </head>
+    <body>
+        <div class="topnav">
+            <a href="../index.html">Home</a>
+        </div>
+
+        <div class="page_info">
+            <div class="table_of_contents">
+                <p id="contents">Contents</p>
+                <ol type="1">
+                    <li><a onclick="document.getElementById('usage').scrollIntoView(true)">How to use the simulation</a></li>
+                    <li><a onclick="document.getElementById('gameCanvas').scrollIntoView(true)">Interactive simulation</a></li>
+                    <li><a onclick="document.getElementById('frictionInfo').scrollIntoView(true)">Information on buoyancy</a></li>
+                </ol>
+            </div>
+            <article style="width: 75ch">
+                <h1 id="usage">How To Use</h1>
+                <p>
+                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. At exercitationem repudiandae veritatis repellendus? Necessitatibus cumque enim doloremque alias dolorem natus maxime veritatis sint. Minus ad, similique quas a alias eius ipsam laboriosam enim debitis fugit quam omnis reprehenderit aspernatur natus nostrum asperiores numquam culpa odio illo sequi dolorum quae aperiam reiciendis perferendis. Velit, aut. Quibusdam ab molestiae tempore, ipsam blanditiis voluptates ipsa nobis explicabo sequi vitae modi, nostrum dolor optio. Aperiam ad velit facere odit iusto repellendus est vero autem, voluptas omnis soluta, dolorem adipisci, corrupti provident esse consequatur commodi sed laboriosam qui quis beatae et. Iste, excepturi! Enim, culpa.
+                </p>
+            </article>
+        </div>
+
+        <div class="simulation_space">
+            <canvas id="gameCanvas" style="background-color: black" width="1000" height="675">
+                Your browser does not support the html canvas element. Try updating or switching browsers</canvas>
+            <noscript>Javascript is disabled by your browser, so the simulation will not work</noscript>
+            <div class="sim_buttons_container">
+                <!-- INPUT ELEMENTS ----------------------------------------------------------------------->
+                <button onclick="document.getElementById('gameCanvas').scrollIntoView(true)">Cinema</button>
+                <div class="input_container">
+                    <label for="slopeSlider">Slope<span>: 0</span>&deg</label>
+                    <input type="range" min="0" max="90" value="0" step="1" class="slider" id="slopeSlider">
+                </div>
+            </div>
+        </div>
+
+        <div class="simulation_info">
+            <article>
+                <h1 id="frictionInfo">Friction</h1>
+                <p>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates, obcaecati eveniet itaque molestiae doloribus consequuntur? A possimus excepturi dolorum laborum deleniti omnis totam quisquam consectetur vel voluptate, ea temporibus. Ullam quis nam omnis nemo id iste aspernatur adipisci sapiente corrupti alias culpa quo iusto in accusantium dolorum iure enim ea possimus praesentium, nobis deleniti impedit delectus minus. Eum, doloremque laboriosam soluta labore, aut, ex nobis nisi expedita explicabo ipsa reiciendis beatae deserunt incidunt harum quibusdam dolor quis accusantium. Aut expedita quo laborum nostrum quaerat magni accusamus hic unde eos soluta corporis voluptas laboriosam placeat earum aspernatur excepturi mollitia nobis repellendus ipsum natus rerum iure, distinctio voluptatem quidem. Et ullam soluta ut perspiciatis earum quibusdam officia fuga praesentium, repellat perferendis optio.
+                </p>
+                
+            </article>
+        </div>
+    </body>
+</html>

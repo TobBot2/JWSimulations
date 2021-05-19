@@ -2,7 +2,7 @@
 
 <html lang="en">
     <head>
-        <title>Gravity</title>
+        <title>Gravity | Simulations</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="presets.js" async></script>
         <script src="planet.js" async></script>
@@ -14,7 +14,40 @@
         <div class="topnav">
             <a href="../index.html">Home</a>
         </div>
+        <div class="page_info">
+            <div class="table_of_contents">
+                <p id="contents">Contents</p>
+                <ol type="1">
+                    <li><a onclick="document.getElementById('usage').scrollIntoView(true)">How to use the simulation</a></li>
+                    <li><a onclick="document.getElementById('gameCanvas').scrollIntoView(true)">Interactive simulation</a></li>
+                    <li><a onclick="document.getElementById('gravityInfo').scrollIntoView(true)">Information on gravity</a></li>
+                </ol>
+            </div>
+            <article style="width:75ch;">
+                <h1 id="usage">How To Use</h1>
+                <p>
+                    Click the 'Place Planet' button, then left-click on the simulation to place it.
 
+                    Use the left/right arrowkeys to change the simulation speed.
+
+                    Use the up/down arrowkeys to change the zoom of the simulation.
+
+                    Set the velocity of a planet by clicking on it to select it, then right clicking to set the velocity.
+                    
+                    The 'Center Planet' button displays everything relative to the selected planet.
+                    
+                    Adjust the sliders below the simulation to adjust the mass and size of the planet you will place.
+
+                    Press backspace or delete to remove the selected planet.
+
+                    The 'Cinema' button centers the simulation on the screen.
+
+                    The 'Navigate Mode' checkbox doesn't work yet.
+
+                    The 'Paths,' 'Velocities,' 'Forces,' and 'Stars' checkboxes toggle whether each respective element is rendered. (unchecking the 'Paths' checkbox will improve the framerate)
+                </p>
+            </article>
+        </div>
         <div class="simulation_space">
             <canvas id="gameCanvas" style="background-color: black" width="1000" height="675">
                 Your browser does not support the html canvas element. Try updating or switching browsers</canvas>
@@ -27,7 +60,7 @@
                     <span id="zoomDisplay" style="white-space: pre;">Zoom: <br>1x</span>
                 </div>
                 <div class="input_container">
-                    <span id="simSpeedDisplay" style="white-space: pre;">Simulation Speed: <br>1x</span>
+                    <span id="simSpeedDisplay" style="white-space: pre;">Simulation&nbspSpeed: <br>1x</span>
                 </div>
                 <button id="focusePlanet" onclick="focusCurrentPlanet()">Center Planet</button>
                 <button id="placePlanet" onclick="primePlace()">Place Planet</button>
@@ -72,32 +105,7 @@
 
         <div class="simulation_info">
             <article>
-                <h1>How To Use</h1>
-                <p>
-                    Click the 'Place Planet' button, then left-click on the simulation to place it.
-
-                    Use the left/right arrowkeys to change the simulation speed.
-
-                    Use the up/down arrowkeys to change the zoom of the simulation.
-
-                    Set the velocity of a planet by clicking on it to select it, then right clicking to set the velocity.
-                    
-                    The 'Center Planet' button displays everything relative to the selected planet.
-                    
-                    Adjust the sliders below the simulation to adjust the mass and size of the planet you will place.
-
-                    Press backspace or delete to remove the selected planet.
-
-                    The 'Cinema' button centers the simulation on the screen.
-
-                    The 'Navigate Mode' checkbox doesn't work yet.
-
-                    The 'Paths,' 'Velocities,' 'Forces,' and 'Stars' checkboxes toggle whether each respective element is rendered. (unchecking the 'Paths' checkbox will improve the framerate)
-                </p>
-            </article>
-
-            <article>
-                <h1>Gravity</h1>
+                <h1 id="gravityInfo">Gravity</h1>
                 <p>
                     Gravity is a force of attraction depicted by the formula 
                     <var class="eq">F<sub>g</sub> = Gm<sub>1</sub>m<sub>2</sub>/r<sup>2</sup></var>.
@@ -128,13 +136,6 @@
 
                 </p>
                 
-            </article>
-
-            <article>
-                <h1>Coding Implementation</h1>
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam nihil, cupiditate facere blanditiis fuga tempore quaerat quibusdam magnam deserunt, autem, vel eaque. Harum earum expedita et iusto obcaecati quas minus porro. Quia neque, illo veniam incidunt, saepe hic earum, fuga laudantium rerum inventore eligendi praesentium temporibus numquam at optio autem cumque. Magni error hic explicabo cum culpa quisquam, labore et enim odio quia tenetur consectetur inventore at voluptatibus molestiae eaque perspiciatis expedita facilis unde similique.
-                </p>
             </article>
         </div>
     </body>

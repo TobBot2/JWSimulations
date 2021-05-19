@@ -7,7 +7,8 @@ for (const s of sliders) {
     s.oninput = () => {
         let percent = (s.value - s.min) / (s.max - s.min) * 100; // get percent based on value, min and max
         s.style.background = "linear-gradient(to right, #3a3a3a " + percent + "%, #5298b9 " + percent + "%)";
-        s.previousElementSibling.lastChild.innerHTML = ": " + s.value;
+        //s.previousElementSibling.lastChild.innerHTML = ": " + s.value;
+        s.previousElementSibling.getElementsByTagName("span")[0].innerHTML = ": " + s.value; // used so I can place units after the number
     }
 }
 

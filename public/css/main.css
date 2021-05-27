@@ -95,6 +95,8 @@ Simulation information elements
 }
 .simulation_info h1 {
     margin-bottom: 5px;
+    position: relative;
+    right: 2ch;
 }
 .simulation_info p {
     margin-top: 5px;

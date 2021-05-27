@@ -83,6 +83,41 @@ class Toy {
         }
 
     }
+    renderArrow(ctx, startX, startY, targX, targY){
+        const ang = Math.atan2(targY-startY, targX-startX);
+        const headSize = Math.sqrt( (startX-targX)*(startX-targX)+(startY-targY)*(startY-targY) ) / 6;
+
+        let headStart = {
+            x: targX - Math.cos(ang) * (headSize * .93), // not sure why I need to multiply the headSize by .93,
+            y: targY - Math.sin(ang) * (headSize * .93), //   its too short otherwise
+        }
+
+        ctx.globalAlpha = .5;
+        // main line
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(headStart.x, headStart.y); // don't go all the way to the end so the opacity doesn't overlap
+        ctx.closePath();
+        ctx.stroke();
+        
+        // arrow head
+        ctx.beginPath();
+        let drawHelper = { // point of reference to draw the ends of the two lines that make up the head
+            x: Math.cos(ang + Math.PI/8 + Math.PI) * headSize,
+            y: Math.sin(ang + Math.PI/8 + Math.PI) * headSize,
+        }
+        ctx.moveTo(targX + drawHelper.x, targY + drawHelper.y);
+        ctx.lineTo(targX, targY);
+        drawHelper = {
+            x: Math.cos(ang - Math.PI/8 + Math.PI) * headSize,
+            y: Math.sin(ang - Math.PI/8 + Math.PI) * headSize,
+        }
+        ctx.lineTo(targX + drawHelper.x, targY + drawHelper.y);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.globalAlpha = 1;
+    }
     render(ctx){
         ctx.strokeStyle = "white";
         ctx.fillStyle = this.color;

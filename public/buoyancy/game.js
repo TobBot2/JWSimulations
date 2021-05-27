@@ -1,6 +1,7 @@
 const canvas = document.getElementById("gameCanvas");
 const fluidDensity = document.getElementById("densitySlider");
 const toyDensity = document.getElementById("toyDensitySlider");
+const forcesToggle = document.getElementById("forceToggle")
 
 const ctx = canvas.getContext('2d');
 
@@ -14,6 +15,8 @@ const fluidWidth = canvas.width * .6; // no physics beyond this point
 const gravity = 1;
 const airFric = .99;
 const fluidFric = .95;
+
+const arrowMultiplier = .001;
 
 const allToys = [];
 
@@ -135,6 +138,22 @@ function render(){
     for (const t of allToys){
         t.render(ctx);
     }
+    if (forcesToggle.checked){
+        for (const t of allToys){
+            if (t.x + t.width/2 > fluidWidth) continue;
+
+            ctx.lineWidth = 5;
+            // draw buoyant force up
+            ctx.strokeStyle = "blue";
+            ctx.fillStyle = "blue";
+            t.renderArrow(ctx, t.x, t.y - t.height/2, t.x, t.y - t.height/2 - fluidDensity.value * gravity * t.areaFunction(t.y) * arrowMultiplier);
+            // draw gravitational force down
+            ctx.strokeStyle = "brown";
+            ctx.fillStyle = "brown";
+            t.renderArrow(ctx, t.x, t.y + t.height/2, t.x, t.y + t.height/2 + gravity*t.mass*t.densityMultiplier * arrowMultiplier);
+            ctx.lineWidth = 1;
+        }
+    }
 
     // tints things underwater blue
     ctx.fillStyle = "cornflowerblue";
@@ -191,6 +210,7 @@ canvas.onmousedown = e => {
             t.mouseDiff.y = -mouse.y + t.y;
 
             toyDensity.value = t.densityMultiplier;
+            toyDensity.oninput(); // updates the slider display (see ../css/csshelper.js)
             
             return;
         }

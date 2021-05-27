@@ -12,8 +12,8 @@ const gravity = 1;
 
 const hilltopHeight = canvas.height-100;
 const hilltopWidth = canvas.width-100;
-const pulleyOffset = 50; // offset from the hilltop position. (up and to the right)
 const objectSize = 20; // radius of pulley, hanging object, and size of sitting object
+const pulleyOffset = 40; // offset from the hilltop position. (up and to the right)
 
 let mus = .6; // coefficient of static friction (mu static)
 let muk = .4; // coefficient of kinetic friction (mu kinetic)
@@ -74,7 +74,7 @@ function render(){
 
     // draw slope
     ctx.beginPath();
-    ctx.fillStyle = "sienna";
+    ctx.fillStyle = "saddlebrown";
     ctx.moveTo(0, canvas.height); // I do crazy math \/ so the slope extends to the edge of the screen. A bit unnecessary, but whatever
     ctx.lineTo(0, canvas.height - hilltopHeight + Math.tan(slopeSlider.value * toRad) * hilltopWidth);
     ctx.lineTo(hilltopWidth, canvas.height - hilltopHeight);
@@ -83,11 +83,26 @@ function render(){
     ctx.closePath();
 
     // draw pulley
+    // get pulley position
+    let pulleyX = hilltopWidth + Math.cos( (slopeSlider.value)/2 * toRad + Math.PI/4 ) * pulleyOffset;
+    let pulleyY = canvas.height - hilltopHeight - Math.sin( (slopeSlider.value)/2 * toRad + Math.PI/4 ) * pulleyOffset;
+
+    // draw actual pulley
     ctx.beginPath();
     ctx.fillStyle = "black";
-    ctx.arc(hilltopWidth + pulleyOffset, canvas.height - hilltopHeight - pulleyOffset, objectSize, 0, Math.PI*2);
+    ctx.arc(pulleyX, pulleyY, objectSize, 0, Math.PI*2);
     ctx.fill();
     ctx.closePath();
+
+    // draw pulley mount
+    ctx.beginPath();
+    ctx.lineWidth = objectSize/2;
+    ctx.moveTo(hilltopWidth, canvas.height - hilltopHeight);
+    ctx.lineTo(pulleyX, pulleyY);
+    ctx.stroke();
+    ctx.closePath();
+
+    // draw 
 }
 function gameLoop(){
     update();

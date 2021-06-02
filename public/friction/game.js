@@ -12,8 +12,9 @@ const gravity = 1;
 
 const hilltopHeight = canvas.height-100;
 const hilltopWidth = canvas.width-100;
-const objectSize = 20; // radius of pulley, hanging object, and size of sitting object
+const objectSize = 40; // radius of pulley, hanging object, and size of sitting object
 const pulleyOffset = 40; // offset from the hilltop position. (up and to the right)
+const ropeLength = hilltopHeight - objectSize;
 
 let mus = .6; // coefficient of static friction (mu static)
 let muk = .4; // coefficient of kinetic friction (mu kinetic)
@@ -28,7 +29,7 @@ let hangingObj = {
 };
 let sittingObj = {
     mass: 1,
-    distance: 0, // distance to pulley (across slope)
+    distance: objectSize, // distance to pulley (across slope)
     vel: 0, // only across slope
     moving: 0, // keeps track of how many frames it has been moving (or its vel > threshold) 
 };
@@ -59,13 +60,26 @@ function update(){
     let netForce = appliedForce - frictionForce;
     // no vertical because the normal force is by definition equal to the force the object pushes on it.
 
-    sittingObj.vel += netForce;
+    sittingObj.vel -= netForce; // I switched it to -= because it seems swapped, but I think this is wrong.
+
+    if (sittingObj.distance > ropeLength){
+        sittingObj.vel = 0;
+        hangingObj.vel = 0;
+        
+        sittingObj.distance = ropeLength;
+    }else if (sittingObj.distance < objectSize){
+        sittingObj.vel = 0;
+        hangingObj.vel = 0;
+
+        sittingObj.distance = objectSize;
+    }
 
     sittingObj.distance += sittingObj.vel;
 
     // see if object is considered moving or not.
     if (sittingObj.vel > .02) sittingObj.moving++;
     else sittingObj.moving = 0;
+
 
 }
 function render(){
@@ -90,23 +104,35 @@ function render(){
     // draw actual pulley
     ctx.beginPath();
     ctx.fillStyle = "black";
-    ctx.arc(pulleyX, pulleyY, objectSize, 0, Math.PI*2);
+    ctx.arc(pulleyX, pulleyY, objectSize/2, 0, Math.PI*2);
     ctx.fill();
     ctx.closePath();
 
     // draw pulley mount
     ctx.beginPath();
-    ctx.lineWidth = objectSize/2;
+    ctx.lineWidth = objectSize/4;
     ctx.moveTo(hilltopWidth, canvas.height - hilltopHeight);
     ctx.lineTo(pulleyX, pulleyY);
     ctx.stroke();
     ctx.closePath();
 
-    // draw 
+    // draw weight
+    ctx.fillStyle = "grey";
+    ctx.fillRect(pulleyX, pulleyY + objectSize/2 - sittingObj.distance + ropeLength, objectSize, objectSize);
+    // draw sitting weight
+    ctx.translate(hilltopWidth + objectSize/2, canvas.height - hilltopHeight - objectSize/2);
+    ctx.rotate(-slopeSlider.value * toRad);
+    ctx.fillStyle = "grey";
+    ctx.fillRect(-sittingObj.distance, -objectSize/2, objectSize, objectSize);
+    ctx.rotate(slopeSlider.value * toRad);
+    ctx.translate(-hilltopWidth - objectSize/2, - canvas.height + hilltopHeight + objectSize/2);
+    
 }
 function gameLoop(){
     update();
     render();
     requestAnimationFrame(gameLoop);
 }
+
+alert(String.fromCodePoint(0x1F6A7) + " This simulation is still in progress. Tread carefully! " + String.fromCodePoint(0x1F6A7));
 gameLoop();

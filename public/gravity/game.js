@@ -5,15 +5,14 @@
  * Fix velocities in presets so they scale accordingly 
  *  - CHANGE g constant based on units (multiply by scale^2? and divide by mass scale^2?)
  * Add gamey elements (coins, preset 'problems', sound?)
- * Add tooltips for inputs (instead of "How To Use" section?)
  */
 
 const canvas = document.getElementById("gameCanvas");
 const colorInput = document.getElementById("planetColor");
 const massInput = document.getElementById("massSlider");
 const sizeInput = document.getElementById("sizeSlider");
+const pathOpacityInput = document.getElementById("pathOpacitySlider");
 const navigateMode = document.getElementById("navigateMode");
-const showPathsInput = document.getElementById("showPaths");
 const showVelsInput = document.getElementById("showVels");
 const showForcesInput = document.getElementById("showForces");
 const showStarsInput = document.getElementById("showStars");
@@ -49,6 +48,7 @@ let playing = false;
 let atStart = true;
 let simSpeed = 1;
 let zoom = 1;
+let minZoom = 1/Math.pow(2,7);
 let xTranslate = 0;
 let yTranslate = 0;
 let pathStats = {
@@ -69,9 +69,9 @@ function getMouse(e){ // parameter is a MouseEvent
 
     mouseX /= zoom;
     mouseY /= zoom;
-
-    mouseX += (canvas.width / 2 + xTranslate) * (1 - 1/zoom);
-    mouseY += (canvas.height / 2 + yTranslate) * (1 - 1/zoom);
+    
+    mouseX += canvas.width / 2 * (1 - 1/zoom) + xTranslate;
+    mouseY += canvas.height / 2 * (1 - 1/zoom) + yTranslate;
 
     if (fPlanetIndex != -1){ // if centered on planet, adjust
         const p = allPlanets[fPlanetIndex];
@@ -95,11 +95,13 @@ function resetSimulation(){
     }
 }
 function focusCurrentPlanet(){
-    fPlanetIndex = sPlanetIndex;
-
-    if (fPlanetIndex == -1){
-        alert("You must select a planet first in order to center it");
+    
+    if (sPlanetIndex == -1 && fPlanetIndex == -1){
+        alert("You must select a planet first in order to follow or unfollow it");
     }
+    fPlanetIndex = sPlanetIndex;
+    xTranslate = 0;
+    yTranslate = 0;
 }
 function primePlace(){
     if (!atStart) {
@@ -112,14 +114,8 @@ function loadPreset(i){ // i is the index in presets.json
     resetSimulation();
     allPlanets.length = 0;
 
-    let dstScale = 0;
-    switch(i){
-        case(0):
-            dstScale = canvas.width * presets[i][0];
-            break;
-        default:
-            dstScale = canvas.width;
-    }
+    let dstScale = presets[i][0];
+    
     for (let j = 1; j < presets[i].length; j++){
         const pInfo = presets[i][j];
         let newP = new Planet(pInfo.x * dstScale, pInfo.y * canvas.height, pInfo.mass, pInfo.radius * dstScale, pInfo.color);
@@ -164,12 +160,12 @@ function update(){
             allPlanets[sPlanetIndex].initY = mouse.y + grab.yDiff;
             allPlanets[sPlanetIndex].applyInitValues();
             clearVelsInPaths();
-        }else if (navigateMode.checked){
-            xTranslate = mouse.x + grab.xDiff;
-            yTranslate = mouse.y + grab.yDiff;
+        }else if (grab.grabbing && navigateMode.checked){
+            xTranslate = mouse.x - xTranslate + grab.xDiff;
+            yTranslate = mouse.y - yTranslate + grab.yDiff;
         }
 
-        if (showPathsInput.checked && pathStats.size < pathStats.maxSize)
+        if (pathOpacityInput.value != 0 && pathStats.size < pathStats.maxSize)
             calculateNextVelInPaths();
     }
 }
@@ -188,10 +184,10 @@ function render(){
     }
     
     // translate/zoom
-    let focusedTranslation = { 
-        x:(canvas.width / 2 + xTranslate) * (1-1/zoom), 
-        y:(canvas.height / 2 + yTranslate) * (1-1/zoom)
-    };
+    let focusedTranslation = {
+        x: canvas.width / 2 * (1-1/zoom) - xTranslate,
+        y: canvas.height / 2 * (1-1/zoom) - yTranslate
+    }
     if (fPlanetIndex != -1) {
         focusedTranslation.x += allPlanets[fPlanetIndex].x - canvas.width/2;
         focusedTranslation.y += allPlanets[fPlanetIndex].y - canvas.height/2;
@@ -207,7 +203,7 @@ function render(){
     let focusedPlanet = null;
     if (fPlanetIndex != -1) focusedPlanet = allPlanets[fPlanetIndex];
     for (const p of allPlanets){
-        if (showPathsInput.checked)
+        if (pathOpacityInput.value != 0); // don't bother rendering if the opacity is 0.
             p.renderPath(ctx, focusedPlanet);
         if (showVelsInput.checked)
             p.renderVel(ctx);
@@ -229,7 +225,9 @@ function render(){
         ctx.globalAlpha = .5;
         ctx.fillStyle = colorInput.value;
         ctx.strokeStyle = "black";
+        ctx.beginPath();
         ctx.arc(mouse.x, mouse.y, sizeInput.value, 0,Math.PI*2,false);
+        ctx.closePath();
         ctx.fill();
         ctx.stroke();
         ctx.globalAlpha = 1;
@@ -256,13 +254,17 @@ canvas.onmousedown = e => { // ON LEFT CLICK
     grab.grabbing = false;
 
     if (navigateMode.checked){
-        grab.grabbing = true;
-        grab.xDiff = -mouse.x;
-        grab.yDiff = -mouse.y;
-    }
+        if (fPlanetIndex != -1){
+            alert("By using 'navigate mode', you have stopped following a planet");
+            fPlanetIndex = -1;
+        }
 
+        grab.grabbing = true;
+        grab.xDiff = xTranslate - mouse.x;
+        grab.yDiff = yTranslate - mouse.y;
+    }
     // IF --NOT-- IN NAVIGATE MODE
-    if (placing){ // place planet?
+    else if (placing){ // place planet?
         placing = false;
         sPlanetIndex = allPlanets.length;
         allPlanets.push(new Planet(mouse.x, mouse.y, massInput.value, sizeInput.value, colorInput.value));
@@ -274,11 +276,13 @@ canvas.onmousedown = e => { // ON LEFT CLICK
             const p = allPlanets[i];
             if ((p.x - mouse.x)*(p.x - mouse.x) + (p.y - mouse.y)*(p.y - mouse.y) < p.radius * p.radius){
                 if (sPlanetIndex == -1 || allPlanets[sPlanetIndex].radius > p.radius){ // select planet with smallest radius that is touching cursor
-                    sPlanetIndex = i;
+                    sPlanetIndex = i; // select
 
-                    grab.grabbing = true;
-                    grab.xDiff = p.x - mouse.x;
-                    grab.yDiff = p.y - mouse.y;
+                    if (!playing){ // if not mid-simulation,    
+                        grab.grabbing = true; // also grab
+                        grab.xDiff = p.x - mouse.x;
+                        grab.yDiff = p.y - mouse.y;
+                    }
                 }
             }
         }
@@ -311,16 +315,15 @@ window.onkeydown = e => {
     // ZOOM IN/OUT -------------------------------------------------
     if (key == 38){ // up arrowkey
         e.preventDefault();
-        zoom += .1;
+        zoom *= 2
     }else if (key == 40){ // down arrowkey
         e.preventDefault();
-        zoom -= .1;
-        if (zoom <= 0){
-            zoom = .1;
+        zoom /= 2;
+        if (zoom < minZoom){
+            zoom = minZoom;
         }
     }
-    zoom = parseFloat(zoom.toFixed(2));
-    zoomDisplay.textContent = "Zoom: \r\n" + zoom + "x";
+    zoomDisplay.textContent = "Zoom: \r\n" + zoom.toFixed(2) + "x";
 
     if (key == 39){ // right arrowkey
         simSpeed++;

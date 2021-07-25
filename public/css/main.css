@@ -100,7 +100,7 @@ Simulation information elements
 }
 .simulation_info p {
     margin-top: 5px;
-    text-indent: 6ch;
+    /*text-indent: 6ch;*/
     text-align: justify;
     line-height: 2em;
 }
@@ -124,7 +124,10 @@ Simulation information elements
 }
 
 /*
-
+====================================
+Stuff that goes above the simulation
+===================================
+(usage and contents)
 */
 .page_info {
     display:flex;
@@ -133,6 +136,46 @@ Simulation information elements
     align-items:center;
     width: 100%;
 }
+.usage_video {
+    margin: 5px;
+    border: #3a3a3a solid;
+    width: 560px; 
+    height: 315px;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #3a3a3a;
+    color: #fafafa;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+
+    position: absolute;
+    z-index: 1;
+    bottom: 120%;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+/* tooltip arrow */
+.tooltip .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #3a3a3a transparent transparent transparent;
+  }
 /*
 =================
 Table of contents

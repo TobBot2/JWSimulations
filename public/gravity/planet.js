@@ -148,7 +148,7 @@ class Planet {
         let force = this.calculateAcc(this.x, this.y);
         force.x *= this.mass;
         force.y *= this.mass;
-        this.renderArrow(ctx, this.x, this.y, this.x + force.x/velDampener*10, this.y + force.y/velDampener*10); // *10 to exaggerate it a bit
+        this.renderArrow(ctx, this.x, this.y, this.x + force.x/velDampener*5, this.y + force.y/velDampener*5);
     }
     renderVel(ctx){
         ctx.strokeStyle = "red";
@@ -160,7 +160,7 @@ class Planet {
         ctx.beginPath();
         ctx.strokeStyle = this.color;
         ctx.lineWidth = 1;
-        ctx.globalAlpha = .5;
+        ctx.globalAlpha = pathOpacityInput.value / 100;
 
         let focusedStep = { x: 0, y: 0};
         if (focusedPlanet != null){

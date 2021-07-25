@@ -27,7 +27,11 @@
                     <li><a onclick="document.getElementById('simulationNotes').scrollIntoView(true)">Notes on gravity simulation</a></li>
                 </ol>
             </div>
-            <article style="width:75ch;">
+            <div>
+                <h1 id="usage" style="position: relative; right: 2ch;">How To Use</h1>
+                <iframe class="usage_video" src="https://drive.google.com/file/d/1p1kXuE4ZL9jXIqC36SFx_oUO5yoWyU-I/preview" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <!-- article style="width:75ch;"> OLD WRITTEN HOW-TO-USE SECTION REPLACED WITH VIDEO (see above)
                 <h1 id="usage" style="position: relative; right: 2ch;">How To Use</h1>
                 <p style="text-indent: 6ch; line-height: 2em">
                     Click the 'Place Planet' button, then left-click on the simulation to place it.
@@ -50,56 +54,71 @@
 
                     The 'Paths,' 'Velocities,' 'Forces,' and 'Stars' checkboxes toggle whether each respective element is rendered. (unchecking the 'Paths' checkbox will improve the framerate)
                 </p>
-            </article>
+            </article -->
         </div>
         <div class="simulation_space">
             <canvas id="gameCanvas" style="background-color: black" width="1000" height="675">
                 Your browser does not support the html canvas element. Try updating or switching browsers</canvas>
             <noscript>Javascript is disabled by your browser, so the simulation will not work</noscript>
             <div class="sim_buttons_container">
-                <button onclick="document.getElementById('gameCanvas').scrollIntoView(true)">Cinema</button>
                 <button id="resetSimulation" onclick="resetSimulation()">Rewind</button>
                 <button id="playAndPause" onclick="togglePlaySimulation()">Play/Pause</button>
-                <div class="input_container">
+                <div class="input_container tooltip">
+                    <span class="tooltiptext">Use the up and down arrowkeys to change this</span>
                     <span id="zoomDisplay" style="white-space: pre;">Zoom: <br>1x</span>
                 </div>
-                <div class="input_container">
+                <div class="input_container tooltip">
+                    <span class="tooltiptext">Use the left and right arrowkeys to change this</span>
                     <span id="simSpeedDisplay" style="white-space: pre;">Simulation&nbspSpeed: <br>1x</span>
                 </div>
-                <button id="focusePlanet" onclick="focusCurrentPlanet()">Center Planet</button>
-                <button id="placePlanet" onclick="primePlace()">Place Planet</button>
-                <div class="input_container">
+                <div class="tooltip">
+                    <span class="tooltiptext">Select an object then click here to center the simulation around it.</span>
+                    <button id="focusePlanet" onclick="focusCurrentPlanet()">Follow Planet</button>
+                </div>
+                <div class="tooltip">
+                    <!--span class="tooltiptext">Click to place a planet somewhere</span-->
+                    <button id="placePlanet" onclick="primePlace()">Place Planet</button>
+                </div>
+                <div class="input_container tooltip">
+                    <!--span class="tooltiptext">Set the color of the object you will place.</span-->
                     <label for="planetColor">Color: </label>
                     <input type="color" class="color" value="#5298b9" id="planetColor">
                 </div>
                 <!--#region sliders-->
-                <div class="input_container">
+                <div class="input_container tooltip">
+                    <!--span class="tooltiptext">Set the mass of the object you will place.</span-->
                     <label for="massSlider">Mass<span>: 500</span></label>
                     <input type="range" min="1" max="1000" value="500" class="slider" id="massSlider">
                 </div>
-                <div class="input_container">
-                    <label for="sizeSlider">Size<span>: 250</span></label>
-                    <input type="range" min="5" max="500" value="250" class="slider" id="sizeSlider">
+                <div class="input_container tooltip">
+                    <!--span class="tooltiptext">Set the size of the object you will place.</span-->
+                    <label for="sizeSlider">Size<span>: 125</span></label>
+                    <input type="range" min="1" max="250" value="125" class="slider" id="sizeSlider">
+                </div>
+                <div class="input_container tooltip">
+                    <span class="tooltiptext">Set how visible the path is. Set to 0% for better performance.</span>
+                    <label for="pathOpacitySlider">Path&nbsp;Opacity<span>: 80</span>%</label>
+                    <input type="range" min="0" max="100" value="80" class="slider" id="pathOpacitySlider">
                 </div>
                 <!--#endregion sliders-->
                 <!--#region toggles-->
-                <div class="input_container">
-                    <label for="navigateMode">Navigate Mode: </label>
+                <div class="input_container tooltip">
+                    <span class="tooltiptext">This is buggy, so don't use it</span>
+                    <label for="navigateMode">Navigate&nbsp;Mode: </label>
                     <input type="checkbox" class="toggle" id="navigateMode">
                 </div>
-                <div class="input_container">
-                    <label for="showPaths">Paths: </label>
-                    <input type="checkbox" class="toggle" checked="true" id="showPaths">
-                </div>
-                <div class="input_container">
+                <div class="input_container tooltip">
+                    <span class="tooltiptext">Show the velocities of each object</span>
                     <label for="showVels">Velocities: </label>
                     <input type="checkbox" class="toggle" checked="true" id="showVels">
                 </div>
-                <div class="input_container">
+                <div class="input_container tooltip">
+                    <span class="tooltiptext">Show the net force on each object</span>
                     <label for="showForces">Forces: </label>
                     <input type="checkbox" class="toggle" id="showForces">
                 </div>
-                <div class="input_container">
+                <div class="input_container tooltip">
+                    <span class="tooltiptext">Display the background stars</span>
                     <label for="showStars">Stars: </label>
                     <input type="checkbox" class="toggle" checked="true" id="showStars">
                 </div>
